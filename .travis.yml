@@ -1,0 +1,17 @@
+language: cpp
+sudo: required
+dist: xenial
+before_script:
+  - ls
+  - gcc --version
+  - g++ --version
+  - cmake --version
+script:
+  - cmake .
+  - cmake --build .
+  - cmake --build . --target package
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script:
+      - curl -T ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -ukafeg:$BINTRAY_API_KEY "https://api.bintray.com/content/kafeg/otus/homeworks/$TRAVIS_BUILD_NUMBER/ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
