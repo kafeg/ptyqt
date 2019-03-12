@@ -1,7 +1,14 @@
 #include "ptyqt.h"
 #include <utility>
+
+#ifdef Q_OS_WIN
 #include "winptyprocess.h"
 #include "conptyprocess.h"
+#endif
+
+#ifdef Q_OS_UNIX
+#include "unixptyprocess.h"
+#endif
 
 IPtyProcess *PtyQt::createPtyProcess(IPtyProcess::PtyType ptyType)
 {

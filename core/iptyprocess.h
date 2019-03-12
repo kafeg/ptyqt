@@ -24,6 +24,7 @@ public:
     IPtyProcess()
         : m_pid(0)
     {  }
+    virtual ~IPtyProcess() { }
 
     virtual bool startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows) = 0;
     virtual bool resize(qint16 cols, qint16 rows) = 0;

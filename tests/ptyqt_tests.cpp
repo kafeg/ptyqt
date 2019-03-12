@@ -2,13 +2,17 @@
 #include "ptyqt.h"
 #include <QProcessEnvironment>
 #include <QThread>
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <tlhelp32.h>
+#endif
 #include <string>
 #include <QTimer>
 
+#ifdef Q_OS_WIN
 #ifndef _WINDEF_
 typedef unsigned long DWORD;
+#endif
 #endif
 
 #define WINPTY_DBG_SERVER_NAME "winpty-debugserver.exe"
@@ -28,6 +32,7 @@ void sleepByEventLoop(int seconds)
     sleepLoop.exec();
 }
 
+#ifdef Q_OS_WIN
 DWORD findProcessId(const std::string& processName, int parentProcessId = 0)
 {
     PROCESSENTRY32 processInfo;
@@ -99,11 +104,71 @@ QStringList getShells()
 
     return shells;
 }
+#endif
 
 class PtyQtTests : public QObject
 {
     Q_OBJECT
 private slots:
+
+    //unix unit tests
+#ifdef Q_OS_UNIX
+    void unixpty()
+    {
+        QString shellPath = "/bin/bash";
+
+        QScopedPointer<IPtyProcess> unixPty(PtyQt::createPtyProcess(IPtyProcess::UnixPty));
+        QCOMPARE(unixPty->type(), IPtyProcess::UnixPty);
+        QVERIFY(unixPty->isAvailable());
+
+        //start UnixPty agent and cmd.exe
+        bool startResult = unixPty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 200, 80);
+        if (!startResult)
+            qDebug() << unixPty->lastError() << unixPty->dumpDebugInfo();
+        QVERIFY(startResult);
+
+        //check pid
+        QVERIFY(unixPty->pid() != 0);
+
+        //check shell welcome
+        QEventLoop el;
+        auto connection = QObject::connect(unixPty->notifier(), &QIODevice::readyRead, [&unixPty, &el]() {
+            sleepByEventLoop(1);
+            qDebug() << "unixPty.read" << unixPty->readAll();
+            el.quit();
+        });
+        el.exec();
+        unixPty->notifier()->disconnect(connection);
+
+        //check shell read after write
+        bool testRes = false;
+        connection = QObject::connect(unixPty->notifier(), &QIODevice::readyRead, [&unixPty, &el, &testRes]() {
+            sleepByEventLoop(1);
+            QString res = QString::fromUtf8(unixPty->readAll());
+            //qDebug() << res;
+
+            //for e.g. bash return empty strings after needed data
+            if (res.isEmpty() && testRes)
+                return;
+
+            testRes = res.contains("ptyqt_tests");
+            testRes = testRes && res.contains("Makefile");
+            testRes = testRes && res.contains("cmake_install.cmake");
+            el.quit();
+        });
+        qDebug() << "ptyin:" << unixPty->write("ls\n");
+        el.exec();
+        QVERIFY(testRes);
+        qDebug() << "ptyin:" << unixPty->write("ls -alh\n");
+        el.exec();
+        QVERIFY(testRes);
+        unixPty->notifier()->disconnect(connection);
+
+        //resize window
+        sleepByEventLoop(1);
+        QVERIFY(unixPty->resize(240, 90));
+    }
+#endif
 
     //windows unit tests
 #ifdef Q_OS_WIN
@@ -114,7 +179,7 @@ private slots:
         qint32 buildNumber = QSysInfo::kernelVersion().split(".").last().toInt();
         if (buildNumber < CONPTY_MINIMAL_WINDOWS_VERSION)
         {
-            qDebug() << QString("You Windows version doesn't support ConPty. Minimal version: %1. Your version: %2").arg(CONPTY_MINIMAL_WINDOWS_VERSION).arg(buildNumber);
+            qDebug() << QString("Your Windows version doesn't support ConPty. Minimal version: %1. Your version: %2").arg(CONPTY_MINIMAL_WINDOWS_VERSION).arg(buildNumber) << QSysInfo::kernelVersion();
             return;
         }
 
@@ -135,41 +200,42 @@ private slots:
                 qDebug() << conPty->lastError() << conPty->dumpDebugInfo();
             QVERIFY(startResult);
 
-            //check pid (winPty->pid() - PID of child process of winpty-agent.exe)
+            //check pid
             QVERIFY(conPty->pid() != 0);
 
             //check shell welcome
             QEventLoop el;
             auto connection = QObject::connect(conPty->notifier(), &QIODevice::readyRead, [&conPty, &el]() {
                 sleepByEventLoop(1);
-                //qDebug() << "winPty.read" << conPty->readAll();
-                conPty->readAll();
+                qDebug() << "conPty.read" << conPty->readAll();
+                //conPty->readAll();
                 el.quit();
             });
             el.exec();
             conPty->notifier()->disconnect(connection);
 
-//            //check shell read after write
-//            bool testRes = false;
-//            connection = QObject::connect(conPty->notifier(), &QIODevice::readyRead, [&conPty, &el, &testRes]() {
-//                sleepByEventLoop(1);
-//                QString res = QString::fromUtf8(conPty->readAll());
+            //check shell read after write
+            bool testRes = false;
+            connection = QObject::connect(conPty->notifier(), &QIODevice::readyRead, [&conPty, &el, &testRes]() {
+                sleepByEventLoop(1);
+                QString res = QString::fromUtf8(conPty->readAll());
+                //qDebug() << res;
 
-//                //for e.g. bash return empty strings after needed data
-//                if (res.isEmpty() && testRes)
-//                    return;
+                //for e.g. bash return empty strings after needed data
+                if (res.isEmpty() && testRes)
+                    return;
 
-//                testRes = res.contains("winpty-agent.exe");
-//                testRes = res.contains("winpty.dll");
-//                testRes = res.contains("ptyqt_tests.exe");
-//                el.quit();
-//            });
-//            qDebug() << conPty->write("dir\r\n\r\n");
-//            sleepByEventLoop(1);
-//            qDebug() << conPty->readAll();
-//            el.exec();
-//            QVERIFY(testRes);
-//            conPty->notifier()->disconnect(connection);
+                testRes = res.contains("winpty-agent.exe");
+                testRes = testRes && res.contains("winpty.dll");
+                testRes = testRes && res.contains("ptyqt_tests.exe");
+                el.quit();
+            });
+            qDebug() << conPty->write("dir\r\n\r\n");
+            //sleepByEventLoop(1);
+            //qDebug() << conPty->readAll();
+            el.exec();
+            QVERIFY(testRes);
+            conPty->notifier()->disconnect(connection);
 
             //resize window
             sleepByEventLoop(1);
@@ -187,7 +253,7 @@ private slots:
 
     void winpty()
     {
-        QVERIFY(false); //force quit
+        //QVERIFY(false); //force quit
 #ifdef PTYQT_DEBUG
         //run debug server
         killProcessByName(WINPTY_DBG_SERVER_NAME);
@@ -237,14 +303,15 @@ private slots:
             connection = QObject::connect(winPty->notifier(), &QIODevice::readyRead, [&winPty, &el, &testRes]() {
                 sleepByEventLoop(1);
                 QString res = QString::fromUtf8(winPty->readAll());
+                //qDebug() << res;
 
                 //for e.g. bash return empty strings after needed data
                 if (res.isEmpty() && testRes)
                     return;
 
                 testRes = res.contains("winpty-agent.exe");
-                testRes = res.contains("winpty.dll");
-                testRes = res.contains("ptyqt_tests.exe");
+                testRes = testRes && res.contains("winpty.dll");
+                testRes = testRes && res.contains("ptyqt_tests.exe");
                 el.quit();
             });
             winPty->write("dir\r\n");
@@ -271,10 +338,6 @@ private slots:
         killProcessByName(WINPTY_DBG_SERVER_NAME);
 #endif
     }
-#endif
-
-    //unix unit tests
-#ifdef Q_OS_UNIX
 #endif
 };
 

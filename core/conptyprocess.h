@@ -7,12 +7,15 @@
 #include <process.h>
 #include <stdio.h>
 
-// Taken from the RS5 Windows SDK, but redefined here in case we're targeting <= 17134
+//Taken from the RS5 Windows SDK, but redefined here in case we're targeting <= 17134
+//Just for compile, ConPty doesn't work with Windows SDK < 17134 or 18346
 #ifndef PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE
 #define PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE \
   ProcThreadAttributeValue(22, FALSE, TRUE, FALSE)
 
 typedef VOID* HPCON;
+
+#define TOO_OLD_WINSDK
 #endif
 
 

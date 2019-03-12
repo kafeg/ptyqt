@@ -13,10 +13,10 @@ if ("${PTYQT_DEBUG}")
     message("WinPty debug server path " ${WINPTY_DEBUG_SERVER_PATH})
 endif()
 
-target_link_libraries(ptyqt_tests ptyqt Qt5::Core Qt5::Test ${WINPTY_LIBS})
+target_link_libraries(ptyqt_tests ptyqt Qt5::Core Qt5::Test)
 
 if (MSVC)
-    target_link_libraries( ptyqt_tests Qt5::Network )
+    target_link_libraries( ptyqt_tests Qt5::Network ${WINPTY_LIBS})
 endif()
 
 foreach( file_i ${WINPTY_DIST_FILES})
