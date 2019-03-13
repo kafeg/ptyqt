@@ -51,6 +51,8 @@ if (MSVC)
     include_directories(${WINPTY_ROOT_DIR}/include)
 endif()
 
+enable_testing()
+
 #sub projects
 add_subdirectory(core)
 add_subdirectory(tests)
