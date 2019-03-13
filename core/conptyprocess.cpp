@@ -107,9 +107,6 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
 
     HRESULT result = m_winContext.createPseudoConsole({cols, rows}, m_inPipeShellSide, m_outPipeShellSide, 0, &m_ptyHandler);
 
-    //CloseHandle(m_inPipeShellSide);
-    //CloseHandle(m_outPipeShellSide);
-
     if (result != S_OK)
     {
         //error can be E_HANDLE
@@ -118,6 +115,18 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
     }
 
     //console created
+
+    //env
+    std::wstringstream envBlock;
+    foreach (QString line, environment)
+    {
+        envBlock << line.toStdWString() << L'\0';
+    }
+    envBlock << L'\0';
+    std::wstring env = envBlock.str();
+    auto envV = vectorFromString(env);
+    LPWSTR envArg = envV.empty() ? nullptr : envV.data();
+    LPWSTR cmdArg = (LPWSTR)m_shellPath.utf16();
 
     //this code runned in separate thread, because current thread will stops on API call 'ConnectNamedPipe'
     QThread *thread = QThread::create([this]()
@@ -139,21 +148,6 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
     //connect to Pty
     thread->start();
 
-    //env
-    std::wstringstream envBlock;
-    foreach (QString line, environment)
-    {
-        envBlock << line.toStdWString() << L'\0';
-    }
-    envBlock << L'\0';
-    std::wstring env = envBlock.str();
-    auto envV = vectorFromString(env);
-    LPWSTR envArg = envV.empty() ? nullptr : envV.data();
-    //LPWSTR cmdArg = vectorFromString(m_shellPath.toStdWString()).data();
-    LPWSTR cmdArg = (LPWSTR)m_shellPath.utf16();
-    //LPWSTR cwdArg = vectorFromString(QFileInfo(m_shellPath).absolutePath().toStdWString()).data();
-    //qDebug() << QString::fromStdWString(std::wstring(cmdArg)) << envArg;
-
     bool connected = ConnectNamedPipe(m_inPipeShellSide, nullptr) && ConnectNamedPipe(m_outPipeShellSide, nullptr);
 
     if (!connected)
@@ -163,18 +157,15 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
     }
 
     //attach the pseudoconsole to the client application we're creating
-    STARTUPINFOEXW pStartupInfo{};
+    STARTUPINFOEXW pStartupInfo{0};
     pStartupInfo.StartupInfo.cb = sizeof(STARTUPINFOEXW);
 
     //get the size of the thread attribute list.
-    size_t attrListSize{};
-    InitializeProcThreadAttributeList(NULL, 1, 0, &attrListSize);
+    size_t size;
+    InitializeProcThreadAttributeList(NULL, 1, 0, reinterpret_cast<PSIZE_T>(&size));
+    pStartupInfo.lpAttributeList = reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST>(malloc(size));
 
-    //allocate a thread attribute list of the correct size
-    pStartupInfo.lpAttributeList =
-            reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(malloc(attrListSize));
-
-    bool fSuccess = InitializeProcThreadAttributeList(pStartupInfo.lpAttributeList, 1, 0, &attrListSize);
+    bool fSuccess = InitializeProcThreadAttributeList(pStartupInfo.lpAttributeList, 1, 0, reinterpret_cast<PSIZE_T>(&size));
     if (!fSuccess)
     {
         m_lastError = QString("ConPty Error: InitializeProcThreadAttributeList failed");

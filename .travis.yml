@@ -3,6 +3,7 @@ sudo: required
 dist: xenial
 before_script:
   - ls
+  - sudo apt-get install qtbase5-dev cmake -y
   - gcc --version
   - g++ --version
   - cmake --version

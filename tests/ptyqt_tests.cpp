@@ -123,8 +123,10 @@ private slots:
 
         //start UnixPty agent and cmd.exe
         bool startResult = unixPty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 200, 80);
+#ifdef PTYQT_DEBUG
         if (!startResult)
             qDebug() << unixPty->lastError() << unixPty->dumpDebugInfo();
+#endif
         QVERIFY(startResult);
 
         //check pid
@@ -196,8 +198,10 @@ private slots:
 
             //start ConPty agent and cmd.exe
             bool startResult = conPty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 200, 80);
+#ifdef PTYQT_DEBUG
             if (!startResult)
                 qDebug() << conPty->lastError() << conPty->dumpDebugInfo();
+#endif
             QVERIFY(startResult);
 
             //check pid
@@ -277,8 +281,10 @@ private slots:
 
             //start WinPty agent and cmd.exe
             bool startResult = winPty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 200, 80);
-            //if (!startResult)
+#ifdef PTYQT_DEBUG
+            if (!startResult)
                 qDebug() << winPty->lastError() << winPty->dumpDebugInfo();
+#endif
             QVERIFY(startResult);
 
             //check pid (winPty->pid() - PID of child process of winpty-agent.exe)

@@ -7,10 +7,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 #params
-set(PTYQT_DEBUG TRUE)
-#set(PTYQT_DEBUG FALSE)
-if ("${PTYQT_DEBUG}")
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(PTYQT_DEBUG TRUE)
     add_definitions(-DPTYQT_DEBUG)
+else()
+    set(PTYQT_DEBUG FALSE)
 endif()
 
 if (MSVC)
@@ -26,11 +27,13 @@ if (MSVC)
     find_package(Qt5Network REQUIRED)
 endif()
 
-message("WinPty root dir " ${WINPTY_ROOT_DIR})
-message("WinPty libs " ${WINPTY_LIBS})
+if (MSVC)
+    message("WinPty root dir " ${WINPTY_ROOT_DIR})
+    message("WinPty libs " ${WINPTY_LIBS})
+endif()
 
 #install
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
+#set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 
 set(PTYQT_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(PTYQT_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
@@ -40,12 +43,14 @@ set(PTYQTLIB_HEADERS_DIR ${PROJECT_SOURCE_DIR}/core)
 
 include_directories(${PTYQT_INSTALL_INCLUDE_DIR})
 include_directories(${PTYQTLIB_HEADERS_DIR})
-include_directories(${WINPTY_ROOT_DIR}/include)
+if (MSVC)
+    include_directories(${WINPTY_ROOT_DIR}/include)
+endif()
 
 #sub projects
 add_subdirectory(core)
 add_subdirectory(tests)
-#add_subdirectory(examples)
+add_subdirectory(examples)
 
 #add_executable(${PROJECT_NAME} "main.cpp")
 

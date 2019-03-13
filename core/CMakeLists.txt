@@ -28,10 +28,11 @@ else()
     add_library( ptyqt SHARED ${SOURCE_FILES} )
 endif()
 
-target_link_libraries( ptyqt Qt5::Core)
+target_link_libraries(ptyqt Qt5::Core)
 
 if (MSVC)
     target_link_libraries( ptyqt Qt5::Network ${WINPTY_LIBS})
+    add_dependencies(ptyqt winpty)
 endif()
 
 install(TARGETS ptyqt DESTINATION ${PTYQT_INSTALL_LIB_DIR})

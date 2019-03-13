@@ -1,0 +1,20 @@
+<!doctype html>
+  <html>
+    <head>
+      <link rel="stylesheet" href="node_modules/xterm/dist/xterm.css" />
+      <script src="node_modules/xterm/dist/xterm.js"></script>
+	  <script src="node_modules/xterm/dist/addons/attach/attach.js"></script>
+    </head>
+    <body>
+      <div id="terminal"></div>
+      <script>
+	    
+	    Terminal.applyAddon(attach);  // Apply the `attach` addon
+	  
+        var term = new Terminal();
+		var socket = new WebSocket('ws://localhost:4242/ws');
+		term.attach(socket);  // Attach the above socket to `term`
+        term.open(document.getElementById('terminal'));
+      </script>
+    </body>
+  </html>

@@ -3,6 +3,8 @@
 
 #include "iptyprocess.h"
 #include <QLibrary>
+#include <SDKDDKVer.h>
+#include <atlconv.h>
 #include <consoleapi.h>
 #include <process.h>
 #include <stdio.h>
@@ -23,19 +25,15 @@ typedef VOID* HPCON;
 class WindowsContext
 {
 public:
-    // Creates a "Pseudo Console" (ConPTY).
     typedef HRESULT (*CreatePseudoConsolePtr)(
             COORD size,         // ConPty Dimensions
             HANDLE hInput,      // ConPty Input
-            HANDLE hOutput,	 // ConPty Output
+            HANDLE hOutput,	    // ConPty Output
             DWORD dwFlags,      // ConPty Flags
-            HPCON* phPC);     // ConPty Reference
+            HPCON* phPC);       // ConPty Reference
 
-    // Resizes the given ConPTY to the specified size, in characters.
     typedef HRESULT (*ResizePseudoConsolePtr)(HPCON hPC, COORD size);
 
-    // Closes the ConPTY and all associated handles. Client applications attached
-    // to the ConPTY will also terminated.
     typedef VOID (*ClosePseudoConsolePtr)(HPCON hPC);
 
     WindowsContext()
@@ -61,7 +59,7 @@ public:
             createPseudoConsole = (CreatePseudoConsolePtr)GetProcAddress((HMODULE)kernel32Handle, "CreatePseudoConsole");
             resizePseudoConsole = (ResizePseudoConsolePtr)GetProcAddress((HMODULE)kernel32Handle, "ResizePseudoConsole");
             closePseudoConsole = (ClosePseudoConsolePtr)GetProcAddress((HMODULE)kernel32Handle, "ClosePseudoConsole");
-            if (!createPseudoConsole || !resizePseudoConsole || !closePseudoConsole)
+            if (createPseudoConsole == NULL || resizePseudoConsole == NULL || closePseudoConsole == NULL)
             {
                 m_lastError = QString("WindowsContext/ConPty error: %1").arg("Invalid on load API functions");
                 return false;

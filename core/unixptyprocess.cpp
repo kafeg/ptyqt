@@ -361,7 +361,10 @@ void ShellProcess::setupChildProcess()
 
     strncpy(utmpxInfo.ut_id, d + strlen(d) - sizeof(utmpxInfo.ut_id), sizeof(utmpxInfo.ut_id));
 
-    gettimeofday(&utmpxInfo.ut_tv, 0);
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    utmpxInfo.ut_tv.tv_sec = tv.tv_sec;
+    utmpxInfo.ut_tv.tv_usec = tv.tv_usec;
 
     utmpxInfo.ut_type = USER_PROCESS;
     utmpxInfo.ut_pid = getpid();
