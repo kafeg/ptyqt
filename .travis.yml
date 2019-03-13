@@ -3,13 +3,14 @@ sudo: required
 dist: xenial
 before_script:
   - ls
-  - sudo apt-get install qtbase5-dev cmake -y
+  - sudo apt-get install qtbase5-dev libqt5websockets5-dev cmake -y
   - gcc --version
   - g++ --version
   - cmake --version
 script:
   - cmake .
   - cmake --build .
+  - cmake --build . --target test
   - cmake --build . --target package
 deploy:
   - provider: script

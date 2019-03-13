@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.2.0)
 
-project(ptyqt VERSION 0.1.1 LANGUAGES CXX)
+if ($ENV{TRAVIS_BUILD_NUMBER})
+    project(ptyqt VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER} LANGUAGES CXX)
+else ($ENV{TRAVIS_BUILD_NUMBER})
+    project(ptyqt VERSION 0.0.1 LANGUAGES CXX)
+endif ($ENV{TRAVIS_BUILD_NUMBER})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -55,3 +59,16 @@ add_subdirectory(examples)
 #add_executable(${PROJECT_NAME} "main.cpp")
 
 #target_link_libraries(${PROJECT_NAME} Qt5::Core)
+
+#Ubuntu package generator
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+
+set(CPACK_PACKAGE_CONTACT v31337@gmail.com)
+
+set(CPACK_GENERATOR DEB)
+
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+include (CPack)

@@ -1,6 +1,6 @@
 # Pty-Qt - C++ library for work with PseudoTerminals
 
-todo place for Travis-Build-Info
+Ubuntu 18.04: [![Build Status](https://travis-ci.com/kafeg/ptyqt.svg?token=8hsFoXZ5FooS7bytYzXZ&branch=master)](https://travis-ci.com/kafeg/ptyqt)
 
 Pty-Qt is small library for access to console applications by pseudo-terminal interface on Mac, Linux and Windows. On Mac and Linux you can use standard PseudoTerminal API and on Windows you can use WinPty or ConPty.
 
