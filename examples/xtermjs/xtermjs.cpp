@@ -22,7 +22,15 @@ int main(int argc, char *argv[])
     {
         QWebSocket *wSocket = wsServer.nextPendingConnection();
         IPtyProcess *pty = PtyQt::createPtyProcess(IPtyProcess::WinPty);
-        pty->startProcess("c:\\Windows\\system32\\cmd.exe", QProcessEnvironment::systemEnvironment().toStringList(), 80, 24);
+
+        qDebug() << "New connection" << wSocket->peerAddress() << wSocket->peerPort();
+
+        QString shellPath = "c:\\Windows\\system32\\cmd.exe";
+#ifdef Q_OS_UNIX
+        shellPath = "/bin/bash";
+#endif
+
+        pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 80, 24);
 
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
         {

@@ -3,11 +3,12 @@ project(ptyqt-xtermjs)
 find_package(Qt5WebSockets REQUIRED)
 
 add_executable(xtermjs_sample xtermjs.cpp)
-add_dependencies(xtermjs_sample ptyqt winpty)
+add_dependencies(xtermjs_sample ptyqt)
 
 target_link_libraries(xtermjs_sample ptyqt Qt5::Core ${Qt5WebSockets_LIBRARIES})
 
 if (MSVC)
+    add_dependencies(xtermjs_sample winpty)
     target_link_libraries(xtermjs_sample Qt5::Network ${WINPTY_LIBS})
 endif()
 
