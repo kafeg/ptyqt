@@ -11,19 +11,21 @@ Pty-Qt is small library for access to console applications by pseudo-terminal in
   - Еarget platforms: x86 or x64
   - Required Qt >= 5.10
 
-## Build on Windows
+## Build on Windows (Git Bash)
 ```sh
 git clone https://github.com/Microsoft/vcpkg.git vcpkg
 cd vcpkg
 ./bootstrap-vcpkg.sh
-./vcpkg integrate install
-./vcpkg install qt-base:x64-windows qt5-network:x64-windows
+./vcpkg.exe integrate install
+./vcpkg.exe install qt-base:x64-windows qt5-network:x64-windows
+export VCPKG_ROOT=`pwd`
+cd ..
 git clone https://github.com/kafeg/ptyqt.git ptyqt
 mkdir ptyqt-build
 cd ptyqt-build
-<VCPKG_ROOT>/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe ../ptyqt "-DCMAKE_TOOLCHAIN_FILE=<VCPKG_ROOT>/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows"
-<VCPKG_ROOT>/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build . --target winpty
-<VCPKG_ROOT>/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build .
+${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe ../ptyqt "-DCMAKE_TOOLCHAIN_FILE=<VCPKG_ROOT>/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows"
+${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build . --target winpty
+${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build .
 ```
 
 ## Build on Ubuntu
