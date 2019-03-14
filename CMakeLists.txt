@@ -27,6 +27,7 @@ endif()
 #dependencies
 add_subdirectory(thirdparty)
 find_package(Qt5Core REQUIRED)
+
 if (MSVC)
     find_package(Qt5Network REQUIRED)
 endif()

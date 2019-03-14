@@ -1,19 +1,58 @@
 language: cpp
-sudo: required
-dist: xenial
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      sudo: required
+      compiler: gcc
+    - os: osx
+      compiler: clang
+    - os: windows
+
 before_script:
-  - ls
-  - sudo apt-get install qtbase5-dev libqt5websockets5-dev cmake -y
-  - gcc --version
-  - g++ --version
+  - #linux
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]] \
+      ls \
+      sudo apt-get install qtbase5-dev libqt5websockets5-dev cmake -y \
+      gcc --version \
+      g++ --version \
+    fi
+  - #osx
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]] \
+      ls \
+      brew install qt \
+      brew install cmake
+    fi
+  - #windows
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]] \
+      dir \
+    fi
+  - #both
   - cmake --version
+
 script:
-  - cmake .
-  - cmake --build .
-  - cmake --build . --target test
-  - cmake --build . --target package
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script:
-      - curl -T ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -ukafeg:$BINTRAY_API_KEY "https://api.bintray.com/content/kafeg/otus/homeworks/$TRAVIS_BUILD_NUMBER/ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]] \
+      cmake . \
+      cmake --build . \
+      cmake --build . --target test \
+    fi
+    - |
+      if [[ "$TRAVIS_OS_NAME" == "osx" ]] \
+        cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.12.1" \
+        cmake --build . \
+        cmake --build . --target test \
+      fi
+ # - cmake .
+ # - cmake --build .
+ # - cmake --build . --target test
+ # - cmake --build . --target package
+#deploy:
+#  - provider: script
+#    skip_cleanup: true
+#    script:
+#      - curl -T ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -ukafeg:$BINTRAY_API_KEY "https://api.bintray.com/content/kafeg/otus/homeworks/$TRAVIS_BUILD_NUMBER/ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
