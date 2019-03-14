@@ -12,41 +12,36 @@ matrix:
 
 before_script:
   - #linux
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]] \
-      ls \
-      sudo apt-get install qtbase5-dev libqt5websockets5-dev cmake -y \
-      gcc --version \
-      g++ --version \
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      ls;
+      sudo apt-get install qtbase5-dev libqt5websockets5-dev cmake -y;
+      gcc --version;
+      g++ --version;
     fi
   - #osx
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]] \
-      ls \
-      brew install qt \
-      brew install cmake
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      ls;
+      brew install qt;
+      brew install cmake;
     fi
   - #windows
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "windows" ]] \
-      dir \
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+      dir;
     fi
   - #both
   - cmake --version
 
 script:
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]] \
-      cmake . \
-      cmake --build . \
-      cmake --build . --target test \
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      cmake .;
+      cmake --build .;
+      cmake --build . --target test;
     fi
-    - |
-      if [[ "$TRAVIS_OS_NAME" == "osx" ]] \
-        cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.12.1" \
-        cmake --build . \
-        cmake --build . --target test \
-      fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.12.1";
+      cmake --build .;
+      cmake --build . --target test;
+    fi
  # - cmake .
  # - cmake --build .
  # - cmake --build . --target test
