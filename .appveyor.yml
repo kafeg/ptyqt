@@ -7,13 +7,10 @@ platform:
     - x86
 
 configuration:
-#    - Debug
     - Release
 
 environment:
     matrix:
-#        - PLATFORM: x86
-#          QT_DIR: C:\Qt\5.12.1\msvc2017
         - PLATFORM: x64
           QT_DIR: C:\Qt\5.12.1\msvc2017_64
 
@@ -29,16 +26,9 @@ build_script:
     - mkdir build
     - cd build
     - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
-#    - dir
     - cmake.exe --build . --target winpty
-#    - dir thirdparty
     - cmake.exe --build .
     - dir thirdparty\winpty\src\winpty
-#    - dir Win32
-#    - dir Debug
-#    - dir
-#    - cmake.exe --build . --target test
-#    - dir
 
 #test_script:
 #    - ctest -C %CONFIGURATION% --output-on-failure

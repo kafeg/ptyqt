@@ -22,15 +22,6 @@ matrix:
         homebrew:
           packages:
             - qt
-#    - name: Windows (VS2017 x64)
-#      language: shell
-#      os: windows
-#      env:
-#        - PLATFORM: x64
-#        - QT5_BASE_DIR: C:/Qt/5.12.0/msvc2017_64
-#      cache:
-#        directories:
-#          - travis-cache
   allow_failures:
     - os: windows
 
@@ -45,13 +36,6 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       ls;
     fi
-#  - #windows
-#  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-#      curl -vLo ~/qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe;
-#      if ! ~/qt-unified-windows-x86-online.exe --verbose --script thirdparty/qt-installer-windows.qs > ~/qt-installer-output.txt; then
-#        cat ~/qt-installer-output.txt; exit 1;
-#      fi
-#    fi
   - #both
   - cmake --version
 
@@ -66,30 +50,3 @@ script:
       cmake --build .;
       cmake --build . --target test;
     fi
-
-#  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-#      git clone https://github.com/Microsoft/vcpkg.git vcpkg;
-#      cd vcpkg;
-#      ./bootstrap-vcpkg.bat;
-#      ./vcpkg.exe integrate install;
-#      ./vcpkg.exe install qt5-base:x64-windows qt5-websockets:x64-windows;
-#      export VCPKG_ROOT=`pwd`;
-#      cd ..;
-#      ${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe . "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows";
-#      ${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build . --target winpty;
-#      ${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build .;
-#      cmake --build . --target test;
-#    fi
-
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
-      cmake.exe "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.12.1";
-    fi
-# - cmake .
-# - cmake --build .
-# - cmake --build . --target test
-# - cmake --build . --target package
-#deploy:
-#  - provider: script
-#    skip_cleanup: true
-#    script:
-#      - curl -T ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -ukafeg:$BINTRAY_API_KEY "https://api.bintray.com/content/kafeg/otus/homeworks/$TRAVIS_BUILD_NUMBER/ptyqt-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
