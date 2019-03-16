@@ -14,9 +14,6 @@
 UnixPtyProcess::UnixPtyProcess()
     : IPtyProcess()
     , m_readMasterNotify(0)
-    , m_writeMasterNotify(0)
-    , m_readSlaveNotify(0)
-    , m_writeSlaveNotify(0)
 {
     m_shellProcess.setWorkingDirectory(QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 }
@@ -48,11 +45,8 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
     m_shellPath = shellPath;
     m_size = QPair<qint16, qint16>(cols, rows);
 
-    //m_shellProcess.startCli(shellPath, QStringList(), size, environment);
-
     int rc = 0;
 
-    //open master
     m_shellProcess.m_handleMaster = ::posix_openpt(O_RDWR | O_NOCTTY);
     if (m_shellProcess.m_handleMaster <= 0)
     {
@@ -61,7 +55,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         return false;
     }
 
-    //get name of slave
     m_shellProcess.m_handleSlaveName = ptsname(m_shellProcess.m_handleMaster);
     if ( m_shellProcess.m_handleSlaveName.isEmpty())
     {
@@ -70,7 +63,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         return false;
     }
 
-    //change permission of slave
     rc = grantpt(m_shellProcess.m_handleMaster);
     if (rc != 0)
     {
@@ -79,7 +71,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         return false;
     }
 
-    //unlock slave
     rc = unlockpt(m_shellProcess.m_handleMaster);
     if (rc != 0)
     {
@@ -88,7 +79,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         return false;
     }
 
-    //open slave
     m_shellProcess.m_handleSlave = ::open(m_shellProcess.m_handleSlaveName.toLatin1().data(), O_RDWR | O_NOCTTY);
     if (m_shellProcess.m_handleSlave < 0)
     {
@@ -156,8 +146,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
     cfsetispeed(&ttmode, B38400);
     cfsetospeed(&ttmode, B38400);
 
-
-    //set params to master
     rc = tcsetattr(m_shellProcess.m_handleMaster, TCSANOW, &ttmode);
     if (rc != 0)
     {
@@ -185,30 +173,6 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
 
         m_shellReadBuffer.append(data);
         m_shellProcess.emitReadyRead();
-    });
-
-    m_writeMasterNotify = new QSocketNotifier(m_shellProcess.m_handleMaster, QSocketNotifier::Write, &m_shellProcess);
-    m_writeMasterNotify->setEnabled(true);
-    QObject::connect(m_writeMasterNotify, &QSocketNotifier::activated, [this](int socket)
-    {
-        Q_UNUSED(socket)
-        m_writeMasterNotify->setEnabled(false);
-    });
-
-    m_readSlaveNotify = new QSocketNotifier(m_shellProcess.m_handleSlave, QSocketNotifier::Read, &m_shellProcess);
-    m_readSlaveNotify->setEnabled(true);
-    QObject::connect(m_readSlaveNotify, &QSocketNotifier::activated, [](int socket)
-    {
-        Q_UNUSED(socket)
-        //not used... slave redirected to master
-    });
-
-    m_writeSlaveNotify = new QSocketNotifier(m_shellProcess.m_handleSlave, QSocketNotifier::Write, &m_shellProcess);
-    m_writeSlaveNotify->setEnabled(true);
-    QObject::connect(m_writeSlaveNotify, &QSocketNotifier::activated, [this](int socket)
-    {
-        Q_UNUSED(socket)
-        m_writeSlaveNotify->setEnabled(false);
     });
 
     QProcessEnvironment envFormat;
@@ -247,7 +211,6 @@ bool UnixPtyProcess::resize(qint16 cols, qint16 rows)
 
 bool UnixPtyProcess::kill()
 {
-    //close cli
     m_shellProcess.m_handleSlaveName = QString();
     if (m_shellProcess.m_handleSlave >= 0)
     {
@@ -260,18 +223,10 @@ bool UnixPtyProcess::kill()
         m_shellProcess.m_handleMaster = -1;
     }
 
-    //kill child process
     if (m_shellProcess.state() == QProcess::Running)
     {
         m_readMasterNotify->disconnect();
-        m_writeMasterNotify->disconnect();
-        m_readSlaveNotify->disconnect();
-        m_writeSlaveNotify->disconnect();
-
         m_readMasterNotify->deleteLater();
-        m_writeMasterNotify->deleteLater();
-        m_readSlaveNotify->deleteLater();
-        m_writeSlaveNotify->deleteLater();
 
         m_shellProcess.terminate();
         m_shellProcess.waitForFinished(1000);
@@ -331,19 +286,12 @@ bool UnixPtyProcess::isAvailable()
 
 void ShellProcess::setupChildProcess()
 {
-    //for more info in book 'Advanced Programming in the UNIX Environment, 3rd Edition'
-    //at this point we are forked, but not executed
     dup2(m_handleSlave, STDIN_FILENO);
     dup2(m_handleSlave, STDOUT_FILENO);
     dup2(m_handleSlave, STDERR_FILENO);
 
-    //create session for process
     pid_t sid = setsid();
-
-    //setup slave
     ioctl(m_handleSlave, TIOCSCTTY, 0);
-
-    //new group for process
     tcsetpgrp(m_handleSlave, sid);
 
     struct utmpx utmpxInfo;

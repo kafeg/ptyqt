@@ -51,7 +51,7 @@ public:
 
 private:
     ShellProcess m_shellProcess;
-    QSocketNotifier *m_readMasterNotify, *m_writeMasterNotify, *m_readSlaveNotify, *m_writeSlaveNotify; //notifiers
+    QSocketNotifier *m_readMasterNotify;
     QByteArray m_shellReadBuffer;
 
 };
