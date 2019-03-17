@@ -1,4 +1,4 @@
-#include "conptyprocess.h"
+#include "conptynamedpipeprocess.h"
 #include <QFileInfo>
 #include <QMutex>
 #include <sstream>
@@ -8,13 +8,7 @@
 #include<QThread>
 #include <QSysInfo>
 
-template <typename T>
-std::vector<T> vectorFromString(const std::basic_string<T> &str)
-{
-    return std::vector<T>(str.begin(), str.end());
-}
-
-ConPtyProcess::ConPtyProcess()
+ConPtyNamedPipeProcess::ConPtyNamedPipeProcess()
     : IWindowsPtyProcess()
     , m_ptyHandler(INVALID_HANDLE_VALUE)
     , m_hShell(INVALID_HANDLE_VALUE)
@@ -22,12 +16,12 @@ ConPtyProcess::ConPtyProcess()
 
 }
 
-ConPtyProcess::~ConPtyProcess()
+ConPtyNamedPipeProcess::~ConPtyNamedPipeProcess()
 {
     kill();
 }
 
-bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows)
+bool ConPtyNamedPipeProcess::startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows)
 {
     //shared between all objects in all threads
     static QMutex pipeNameCounterMutex;
@@ -81,24 +75,24 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
     };
 
     //shared between all objects in all threads
-    qint64 pipeCounterVale = 0;
+    qint64 pipeCounterValue = 0;
     {
         QMutexLocker locker(&pipeNameCounterMutex);
-        pipeCounterVale = pipeNameCounter;
+        pipeCounterValue = pipeNameCounter;
         pipeNameCounter++;
     }
     //
 
-    QByteArray randPart = QCryptographicHash::hash(QByteArray::number(qrand()) + QByteArray::number(pipeCounterVale) + QUuid::createUuid().toByteArray(), QCryptographicHash::Sha256).left(16);
-    bool createPipeRes = createNamedPipe(true, &m_inPipeShellSide, m_conInName, QString("conpty-conin-%1-%2").arg(pipeCounterVale).arg(QString::fromLatin1(randPart.toHex())));
+    QByteArray randPart = QCryptographicHash::hash(QByteArray::number(qrand()) + QByteArray::number(pipeCounterValue) + QUuid::createUuid().toByteArray(), QCryptographicHash::Sha256).left(16);
+    bool createPipeRes = createNamedPipe(true, &m_inPipeShellSide, m_conInName, QString("conpty-conin-%1-%2").arg(pipeCounterValue).arg(QString::fromLatin1(randPart.toHex())));
     if (!createPipeRes)
     {
         m_lastError = QString("ConPty Error: Unable to create IN pipe -> %1").arg(GetLastError());
         return false;
     }
 
-    randPart = QCryptographicHash::hash(QByteArray::number(qrand()) + QByteArray::number(pipeCounterVale) + QUuid::createUuid().toByteArray(), QCryptographicHash::Sha256).left(16);
-    createPipeRes = createNamedPipe(false, &m_outPipeShellSide, m_conOutName, QString("conpty-conout-%1-%2").arg(pipeCounterVale).arg(QString::fromLatin1(randPart.toHex())));
+    randPart = QCryptographicHash::hash(QByteArray::number(qrand()) + QByteArray::number(pipeCounterValue) + QUuid::createUuid().toByteArray(), QCryptographicHash::Sha256).left(16);
+    createPipeRes = createNamedPipe(false, &m_outPipeShellSide, m_conOutName, QString("conpty-conout-%1-%2").arg(pipeCounterValue).arg(QString::fromLatin1(randPart.toHex())));
     if (!createPipeRes)
     {
         m_lastError = QString("ConPty Error: Unable to create OUT pipe -> %1").arg(GetLastError());
@@ -213,7 +207,7 @@ bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environme
     return true;
 }
 
-bool ConPtyProcess::resize(qint16 cols, qint16 rows)
+bool ConPtyNamedPipeProcess::resize(qint16 cols, qint16 rows)
 {
     if (m_ptyHandler == nullptr)
     {
@@ -230,7 +224,7 @@ bool ConPtyProcess::resize(qint16 cols, qint16 rows)
     return res;
 }
 
-bool ConPtyProcess::kill()
+bool ConPtyNamedPipeProcess::kill()
 {
     bool exitCode = false;
     if (m_hShell != 0 && m_ptyHandler != 0)
@@ -252,13 +246,13 @@ bool ConPtyProcess::kill()
     return exitCode;
 }
 
-IPtyProcess::PtyType ConPtyProcess::type()
+IPtyProcess::PtyType ConPtyNamedPipeProcess::type()
 {
-    return PtyType::ConPty;
+    return PtyType::ConPtyNamedPipe;
 }
 
 #ifdef PTYQT_DEBUG
-QString ConPtyProcess::dumpDebugInfo()
+QString ConPtyNamedPipeProcess::dumpDebugInfo()
 {
     return QString("PID: %1, ConIn: %2, ConOut: %3, Type: %4, Cols: %5, Rows: %6, IsRunning: %7, Shell: %8")
             .arg(m_pid).arg(m_conInName).arg(m_conOutName).arg(type())
@@ -267,7 +261,7 @@ QString ConPtyProcess::dumpDebugInfo()
 }
 #endif
 
-bool ConPtyProcess::isAvailable()
+bool ConPtyNamedPipeProcess::isAvailable()
 {
 #ifdef TOO_OLD_WINSDK
     return false; //very importnant! ConPty can be built, but it doesn't work if built with old sdk and Win10 < 1903

@@ -192,8 +192,8 @@ private slots:
         foreach (QString shellPath, shells)
         {
             qDebug() << "Test" << shellPath;
-            QScopedPointer<IPtyProcess> conPty(PtyQt::createPtyProcess(IPtyProcess::ConPty));
-            QCOMPARE(conPty->type(), IPtyProcess::ConPty);
+            QScopedPointer<IPtyProcess> conPty(PtyQt::createPtyProcess(IPtyProcess::ConPtyAnonPipe));
+            QCOMPARE(conPty->type(), IPtyProcess::ConPtyNamedPipe);
             QVERIFY(conPty->isAvailable());
 
             //start ConPty agent and cmd.exe
@@ -257,7 +257,7 @@ private slots:
 
     void winpty()
     {
-        //QVERIFY(false); //force quit
+        QVERIFY(false); //force quit
 #ifdef PTYQT_DEBUG
         //run debug server
         killProcessByName(WINPTY_DBG_SERVER_NAME);

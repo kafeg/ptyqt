@@ -17,8 +17,9 @@ public:
     {
         UnixPty = 0,
         WinPty = 1,
-        ConPty = 2,
-        AutoPty = 3
+        ConPtyNamedPipe = 2,
+        ConPtyAnonPipe = 3,
+        AutoPty = 4
     };
 
     IPtyProcess()

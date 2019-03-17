@@ -20,14 +20,16 @@ endif()
 
 if (MSVC)
     #target arch for find winpty libs
-    if (TARGET_ARCH STREQUAL "")
-        set(TARGET_ARCH x64) #x86 / x64
-    endif()
-    if (TARGET_ARCH STREQUAL "x86_amd64")
+    if ("${TARGET_ARCH}" STREQUAL "x86_amd64")
         set(TARGET_ARCH x64)
+    endif()
+    if ("${TARGET_ARCH}" STREQUAL "")
+        set(TARGET_ARCH x64) #x86 / x64
     endif()
     set(BUILD_TYPE STATIC) #STATIC / SHARED
     set(WINPTY_ROOT_DIR "") #user can define his own installation of WinPty for prevent auto-downloading dependency
+
+    #message("TARGET_ARCH ${TARGET_ARCH}")
 endif()
 
 #dependencies

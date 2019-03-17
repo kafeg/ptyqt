@@ -1,16 +1,12 @@
-#ifndef CONPTYPROCESS_H
-#define CONPTYPROCESS_H
+#ifndef CONPTYNAMEDPIPEPROCESS_H
+#define CONPTYNAMEDPIPEPROCESS_H
 
-#include "iptyprocess.h"
+#include "conpty_shared.h"
 #include <QLibrary>
-#include <SDKDDKVer.h>
-#include <atlconv.h>
-#include <consoleapi.h>
-#include <process.h>
 #include <stdio.h>
 
-//Taken from the RS5 Windows SDK, but redefined here in case we're targeting <= 17134
-//Just for compile, ConPty doesn't work with Windows SDK < 17134 or 18346
+//Taken from the RS5 Windows SDK, but redefined here in case we're targeting <= 17733
+//Just for compile, ConPty doesn't work with Windows SDK < 17733
 #ifndef PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE
 #define PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE \
   ProcThreadAttributeValue(22, FALSE, TRUE, FALSE)
@@ -89,11 +85,11 @@ private:
     QString m_lastError;
 };
 
-class ConPtyProcess : public IWindowsPtyProcess
+class ConPtyNamedPipeProcess : public IWindowsPtyProcess
 {
 public:
-    ConPtyProcess();
-    ~ConPtyProcess();
+    ConPtyNamedPipeProcess();
+    ~ConPtyNamedPipeProcess();
 
     bool startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows);
     bool resize(qint16 cols, qint16 rows);
@@ -111,4 +107,4 @@ private:
     HANDLE m_inPipeShellSide, m_outPipeShellSide;
 };
 
-#endif // CONPTYPROCESS_H
+#endif // CONPTYNAMEDPIPEPROCESS_H
