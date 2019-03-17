@@ -14,6 +14,7 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kaf
   - UnixPty part can work on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
   - Еarget platforms: x86 or x64
   - Required Qt >= 5.10
+  - !!!IMPORTANT!!! Now library has some problems with ConPty, work in progress: https://github.com/Microsoft/console/issues/388
 
 ### Build on Windows (Git Bash)
 ```sh
