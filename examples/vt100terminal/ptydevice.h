@@ -13,6 +13,9 @@ public:
     {
         //use cmd.exe or bash, depends on target platform
         IPtyProcess::PtyType ptyType = IPtyProcess::WinPty;
+#ifdef Q_OS_UNIX
+        ptyType = IPtyProcess::UnixPty;
+#endif
 
         //create new Pty instance
         m_pty = PtyQt::createPtyProcess(ptyType);
@@ -31,7 +34,6 @@ public:
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
     #ifdef Q_OS_UNIX
         shellPath = "/bin/bash";
-        ptyType = IPtyProcess::UnixPty;
     #endif
 
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
