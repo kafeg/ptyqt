@@ -4,7 +4,7 @@ Pty-Qt is small library for access to console applications by pseudo-terminal in
 
 ### CI Status
 
-Ubuntu / MacOS X: [![Build Status](https://travis-ci.com/kafeg/ptyqt.svg?token=8hsFoXZ5FooS7bytYzXZ&branch=master)](https://travis-ci.com/kafeg/ptyqt)
+Ubuntu / MacOS X: [![Build Status](https://travis-ci.org/kafeg/ptyqt.svg?branch=master)](https://travis-ci.org/kafeg/ptyqt)
 
 Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt?svg=true)](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt)
 
