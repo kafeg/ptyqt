@@ -7,7 +7,7 @@
 
 #define READ_INTERVAL_MSEC 500
 
-HRESULT CreatePseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows)
+HRESULT ConPtyAnonymousPipeProcess::createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows)
 {
     HRESULT hr{ E_UNEXPECTED };
     HANDLE hPipePTYIn{ INVALID_HANDLE_VALUE };
@@ -18,7 +18,7 @@ HRESULT CreatePseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPip
             CreatePipe(phPipeIn, &hPipePTYOut, NULL, 0))
     {
         // Create the Pseudo Console of the required size, attached to the PTY-end of the pipes
-        hr = CreatePseudoConsole({cols, rows}, hPipePTYIn, hPipePTYOut, 0, phPC);
+        hr = m_winContext.createPseudoConsole({cols, rows}, hPipePTYIn, hPipePTYOut, 0, phPC);
 
         // Note: We can close the handles to the PTY-end of the pipes here
         // because the handles are dup'ed into the ConHost and will be released
@@ -32,7 +32,7 @@ HRESULT CreatePseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPip
 
 // Initializes the specified startup info struct with the required properties and
 // updates its thread attribute list with the specified ConPTY handle
-HRESULT InitializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC)
+HRESULT ConPtyAnonymousPipeProcess::initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC)
 {
     HRESULT hr{ E_UNEXPECTED };
 
@@ -91,7 +91,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
 {
     if (!isAvailable())
     {
-        m_lastError = "ConPty Error: ConPty unavailable on this system!";
+        m_lastError = m_winContext.lastError();
         return false;
     }
 
@@ -130,7 +130,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
     //  Create the Pseudo Console and pipes to it
     HANDLE hPipeIn{ INVALID_HANDLE_VALUE };
     HANDLE hPipeOut{ INVALID_HANDLE_VALUE };
-    hr = CreatePseudoConsoleAndPipes(&m_ptyHandler, &hPipeIn, &hPipeOut, cols, rows);
+    hr = createPseudoConsoleAndPipes(&m_ptyHandler, &hPipeIn, &hPipeOut, cols, rows);
 
     if (S_OK != hr)
     {
@@ -140,7 +140,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
 
     // Initialize the necessary startup info struct
     STARTUPINFOEX startupInfo{};
-    if (S_OK != InitializeStartupInfoAttachedToPseudoConsole(&startupInfo, m_ptyHandler))
+    if (S_OK != initializeStartupInfoAttachedToPseudoConsole(&startupInfo, m_ptyHandler))
     {
         m_lastError = QString("ConPty Error: InitializeStartupInfoAttachedToPseudoConsole fail");
         return false;
@@ -234,7 +234,7 @@ bool ConPtyAnonymousPipeProcess::resize(qint16 cols, qint16 rows)
         return false;
     }
 
-    bool res = SUCCEEDED(ResizePseudoConsole(m_ptyHandler, {cols, rows}));
+    bool res = SUCCEEDED(m_winContext.resizePseudoConsole(m_ptyHandler, {cols, rows}));
 
     if (res)
     {
@@ -255,14 +255,14 @@ bool ConPtyAnonymousPipeProcess::kill()
         m_readEv.quit();
 
         // Close ConPTY - this will terminate client process if running
-        ClosePseudoConsole(m_ptyHandler);
+        m_winContext.closePseudoConsole(m_ptyHandler);
 
         // Clean-up the pipes
         if (INVALID_HANDLE_VALUE != m_hPipeOut) CloseHandle(m_hPipeOut);
         if (INVALID_HANDLE_VALUE != m_hPipeIn) CloseHandle(m_hPipeIn);
         m_pid = 0;
         m_ptyHandler = INVALID_HANDLE_VALUE;
-        m_hPipeOut = INVALID_HANDLE_VALUE;
+        m_hPipeIn = INVALID_HANDLE_VALUE;
         m_hPipeOut = INVALID_HANDLE_VALUE;
 
         exitCode = true;
@@ -311,6 +311,5 @@ bool ConPtyAnonymousPipeProcess::isAvailable()
     qint32 buildNumber = QSysInfo::kernelVersion().split(".").last().toInt();
     if (buildNumber < CONPTY_MINIMAL_WINDOWS_VERSION)
         return false;
-    //    return m_winContext.init();
-    return true;
+    return m_winContext.init();
 }

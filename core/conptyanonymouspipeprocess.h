@@ -13,6 +13,7 @@ public:
     PtyBuffer() {  }
     ~PtyBuffer() { }
 
+    //just empty realization, we need only 'readyRead' signal of this class
     qint64 readData(char *data, qint64 maxlen) { return 0; }
     qint64 writeData(const char *data, qint64 len) { return 0; }
 
@@ -48,6 +49,11 @@ public:
     bool isAvailable();
 
 private:
+    HRESULT createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows);
+    HRESULT initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC);
+
+private:
+    WindowsContext m_winContext;
     HPCON m_ptyHandler;
     HANDLE m_hPipeIn, m_hPipeOut;
     QEventLoop m_readEv;
