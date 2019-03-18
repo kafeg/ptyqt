@@ -6,7 +6,7 @@ Pty-Qt is small library for access to console applications by pseudo-terminal in
 
 Ubuntu / MacOS X: [![Build Status](https://travis-ci.org/kafeg/ptyqt.svg?branch=master)](https://travis-ci.org/kafeg/ptyqt)
 
-Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt?svg=true)](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt)
+Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt?svg=true)](https://ci.appveyor.com/project/kafeg/ptyqt)
 
 ## Pre-Requirements and build
   - ConPty part works only on Windows 10 >= 1903 (build > 18309) and can be built only with Windows SDK >= 10.0.18346.0 (maybe >= 17134, but not sure)

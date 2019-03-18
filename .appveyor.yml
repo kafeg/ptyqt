@@ -23,6 +23,8 @@ matrix:
           QT_DIR: C:\Qt\5.12.1\msvc2017
 
 build_script:
+    - git submodule init
+    - git submodule update
     - mkdir build
     - cd build
     - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
