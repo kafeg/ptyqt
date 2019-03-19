@@ -174,3 +174,9 @@ Resources used to develop this library:
   - https://devblogs.microsoft.com/commandline/windows-command-line-introducing-the-windows-pseudo-console-conpty/
   - https://devblogs.microsoft.com/commandline/windows-command-line-backgrounder/
   - https://github.com/sebcaux/QVTerminal
+
+## XtermJS + PTY-Qt + C++ sample screenshots
+
+![Midnight Commander](https://github.com/kafeg/ptyqt/raw/master/examples/xtermjs/screens/midnight_commander_bash_unix.png)
+
+![Far Manager](https://github.com/kafeg/ptyqt/raw/master/examples/xtermjs/screens/far_manager_cmd_windows.png)
