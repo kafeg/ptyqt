@@ -53,7 +53,9 @@ cmake --build .
 ```
 
 ## Usage
-Standard way: build and install library then link it to your project and check examples for sample code. Simple code snippet from 'xtermjs' example:
+Standard way: build and install library then link it to your project and check examples for sample code.
+
+For example, this code snipped works on Windows, Linux and Mac and make interface from Pty to XTermJS:
 ```cpp
 #include <QCoreApplication>
 #include <QWebSocketServer>
@@ -61,8 +63,12 @@ Standard way: build and install library then link it to your project and check e
 #include "ptyqt.h"
 #include <QTimer>
 #include <QProcessEnvironment>
+#include <QSysInfo>
 
 #define PORT 4242
+
+#define COLS 87
+#define ROWS 26
 
 int main(int argc, char *argv[])
 {
@@ -83,9 +89,17 @@ int main(int argc, char *argv[])
 
         //use cmd.exe or bash, depends on target platform
         IPtyProcess::PtyType ptyType = IPtyProcess::WinPty;
+        qint32 buildNumber = QSysInfo::kernelVersion().split(".").last().toInt();
+        if (buildNumber >= CONPTY_MINIMAL_WINDOWS_VERSION)
+        {
+            qDebug() << "Use ConPty except of WinPty";
+            ptyType = IPtyProcess::ConPty;
+        }
+
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
+        //shellPath = "C:\\Program\ Files\\Git\\bin\\bash.exe";
 #ifdef Q_OS_UNIX
-        shellPath = "/bin/bash";
+        shellPath = "/bin/sh";
         ptyType = IPtyProcess::UnixPty;
 #endif
 
@@ -95,7 +109,7 @@ int main(int argc, char *argv[])
         qDebug() << "New connection" << wSocket->peerAddress() << wSocket->peerPort() << pty->pid();
 
         //start Pty process ()
-        pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 80, 24);
+        pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), COLS, ROWS);
 
         //connect read channel from Pty process to write channel on websocket
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
@@ -106,7 +120,7 @@ int main(int argc, char *argv[])
         //connect read channel of Websocket to write channel of Pty process
         QObject::connect(wSocket, &QWebSocket::textMessageReceived, [wSocket, pty](const QString &message)
         {
-            pty->write(message.toUtf8());
+            pty->write(message.toLatin1());
         });
 
         //...
@@ -115,6 +129,8 @@ int main(int argc, char *argv[])
 
         //add connection to list of active connections
         sessions.insert(wSocket, pty);
+
+        qDebug() << pty->size();
     });
 
     //stop eventloop if needed
