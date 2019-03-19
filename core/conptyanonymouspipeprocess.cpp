@@ -189,7 +189,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
             // Read from the pipe
             fRead = ReadFile(hPipeIn, szBuffer, BUFF_SIZE, &dwBytesRead, NULL);
 
-            // Write received text to the Console
+            // Write received text to the output buffer
             // Note: Write to the Console using WriteFile(hConsole...), not printf()/puts() to
             // prevent partially-read VT sequences from corrupting output
             //WriteFile(hConsole, szBuffer, dwBytesRead, &dwBytesWritten, NULL);

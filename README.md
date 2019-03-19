@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
 ## Examples
 ### XtermJS
-- build and run example
+- build and run example from cmd.exe (important: )
 - install nodejs (your prefer way)
 - open console and run:
 ```sh
@@ -151,6 +151,10 @@ http-server ./
 ```
 - open http://127.0.0.1:8080/ in Web browser
 - use your terminal, for example install and run 'Midnight Commander' or 'Far' for test pseduo-graphic interface
+
+!!!IMPORTANT!!!
+- do not use Git Bash for run 'xtermjs_sample.exe' on Windows, it has some issues: https://github.com/git-for-windows/git/wiki/FAQ#some-native-console-programs-dont-work-when-run-from-git-bash-how-to-fix-it
+- Only Far manager >= 3.0 supported by XTermJS, all old versioans are unsopported
 
 ### QVTerminal
 This is very-very-very basic implementation of VT100 terminal + Pty-Qt.
