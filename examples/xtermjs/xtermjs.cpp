@@ -7,6 +7,9 @@
 
 #define PORT 4242
 
+#define COLS 87
+#define ROWS 26
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -28,7 +31,7 @@ int main(int argc, char *argv[])
         IPtyProcess::PtyType ptyType = IPtyProcess::WinPty;
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
 #ifdef Q_OS_UNIX
-        shellPath = "/bin/bash";
+        shellPath = "/bin/sh";
         ptyType = IPtyProcess::UnixPty;
 #endif
 
@@ -38,7 +41,7 @@ int main(int argc, char *argv[])
         qDebug() << "New connection" << wSocket->peerAddress() << wSocket->peerPort() << pty->pid();
 
         //start Pty process ()
-        pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), 80, 24);
+        pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), COLS, ROWS);
 
         //connect read channel from Pty process to write channel on websocket
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
@@ -49,7 +52,7 @@ int main(int argc, char *argv[])
         //connect read channel of Websocket to write channel of Pty process
         QObject::connect(wSocket, &QWebSocket::textMessageReceived, [wSocket, pty](const QString &message)
         {
-            pty->write(message.toUtf8());
+            pty->write(message.toLatin1());
         });
 
         //...
@@ -58,6 +61,8 @@ int main(int argc, char *argv[])
 
         //add connection to list of active connections
         sessions.insert(wSocket, pty);
+
+        qDebug() << pty->size();
     });
 
     //stop eventloop if needed

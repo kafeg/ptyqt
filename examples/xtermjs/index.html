@@ -2,19 +2,36 @@
   <html>
     <head>
       <link rel="stylesheet" href="node_modules/xterm/dist/xterm.css" />
+      <link rel="stylesheet" href="style.css" />
       <script src="node_modules/xterm/dist/xterm.js"></script>
-	  <script src="node_modules/xterm/dist/addons/attach/attach.js"></script>
+      <script src="node_modules/xterm/dist/addons/attach/attach.js"></script>
+      <script src="node_modules/xterm/dist/addons/fit/fit.js"></script>
+      <script src="node_modules/xterm/dist/addons/winptyCompat/winptyCompat.js"></script>
     </head>
     <body>
-      <div id="terminal"></div>
+      <h1 style="color: #2D2E2C">xterm.js + Pty-Qt + C++</h1>
+      <div id="terminal-container"></div>
       <script>
-	    
-	    Terminal.applyAddon(attach);  // Apply the `attach` addon
-	  
-        var term = new Terminal();
-		var socket = new WebSocket('ws://localhost:4242/ws');
-		term.attach(socket);  // Attach the above socket to `term`
-        term.open(document.getElementById('terminal'));
+            //document.getElementById('terminal-container').style.width = 80;
+            //document.getElementById('terminal-container').style.height = 24;
+
+            Terminal.applyAddon(attach);  // Apply the `attach` addon
+            Terminal.applyAddon(fit);
+            Terminal.applyAddon(winptyCompat);
+
+            var term = new Terminal();
+            term.on('resize', (size) => {
+                console.log(size);
+            });
+
+            var socket = new WebSocket('ws://localhost:4242/ws');
+
+            term.attach(socket);
+
+            term.open(document.getElementById('terminal-container'));
+            term.winptyCompatInit();
+            term.fit();
+            term.focus();
       </script>
     </body>
   </html>

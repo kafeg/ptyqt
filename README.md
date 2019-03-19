@@ -150,9 +150,15 @@ npm install http-server -g
 http-server ./
 ```
 - open http://127.0.0.1:8080/ in Web browser
+- use your terminal, for example install and run 'Midnight Commander' or 'Far' for test pseduo-graphic interface
 
-### QTerminal
-in dev...
+### QVTerminal
+This is very-very-very basic implementation of VT100 terminal + Pty-Qt.
+It's just forked repository from https://github.com/sebcaux/QVTerminal and used for this example with connection to real PTY.
+So, you can see basic sample howto make VT100-like terminal from scratch.
+Just build project and run executable of this example.
+
+Also, you can find for example projects like https://github.com/lxqt/qterminal, they all based on QTermWidget and they all not-crossplatform and support only UNIX. But QTermWidget is support full VT100 protocol because it's fork from Linux/KDE/Konsole application.
 
 ## More information
 Resources used to develop this library:
@@ -163,3 +169,4 @@ Resources used to develop this library:
   - https://github.com/lxqt/qterminal
   - https://devblogs.microsoft.com/commandline/windows-command-line-introducing-the-windows-pseudo-console-conpty/
   - https://devblogs.microsoft.com/commandline/windows-command-line-backgrounder/
+  - https://github.com/sebcaux/QVTerminal

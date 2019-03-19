@@ -161,19 +161,31 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         Q_UNUSED(socket)
 
         QByteArray buffer;
-        int size = 1024;
+        int size = 1025;
+        int readSize = 1024;
         QByteArray data;
         do
         {
             char nativeBuffer[size];
-            int len = ::read(m_shellProcess.m_handleMaster, nativeBuffer, size);
+            int len = ::read(m_shellProcess.m_handleMaster, nativeBuffer, readSize);
             data = QByteArray(nativeBuffer, len);
             buffer.append(data);
-        } while (data.size() == size);
+        } while (data.size() == readSize); //last data block always < readSize
 
-        m_shellReadBuffer.append(data);
+        m_shellReadBuffer.append(buffer);
         m_shellProcess.emitReadyRead();
     });
+
+    environment.append("TERM=xterm-color");
+    environment.append("ITERM_PROFILE=Default");
+    environment.append("XPC_FLAGS=0x0");
+    environment.append("XPC_SERVICE_NAME=0");
+    environment.append("LANG=en_US.UTF-8");
+    environment.append("LC_ALL=en_US.UTF-8");
+    environment.append("LC_CTYPE=UTF-8");
+    environment.append("INIT_CWD=" + QCoreApplication::applicationDirPath());
+    environment.append("COMMAND_MODE=unix2003");
+    environment.append("COLORTERM=truecolor");
 
     QProcessEnvironment envFormat;
     foreach (QString line, environment)
@@ -187,6 +199,8 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
     m_shellProcess.waitForStarted();
 
     m_pid = m_shellProcess.processId();
+
+    resize(cols, rows);
 
     return true;
 }
