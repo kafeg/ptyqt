@@ -4,6 +4,7 @@
 #include "ptyqt.h"
 #include <QTimer>
 #include <QProcessEnvironment>
+#include <QSysInfo>
 
 #define PORT 4242
 
@@ -29,6 +30,13 @@ int main(int argc, char *argv[])
 
         //use cmd.exe or bash, depends on target platform
         IPtyProcess::PtyType ptyType = IPtyProcess::WinPty;
+        qint32 buildNumber = QSysInfo::kernelVersion().split(".").last().toInt();
+        if (buildNumber >= CONPTY_MINIMAL_WINDOWS_VERSION)
+        {
+            qDebug() << "Use ConPty except of WinPty";
+            ptyType = IPtyProcess::ConPty;
+        }
+
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
         //shellPath = "C:\\Program\ Files\\Git\\bin\\bash.exe";
 #ifdef Q_OS_UNIX

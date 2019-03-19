@@ -3,7 +3,7 @@
 
 #ifdef Q_OS_WIN
 #include "winptyprocess.h"
-#include "conptynamedpipeprocess.h"
+//#include "conptynamedpipeprocess.h"
 #include "conptyanonymouspipeprocess.h"
 #endif
 
@@ -19,10 +19,10 @@ IPtyProcess *PtyQt::createPtyProcess(IPtyProcess::PtyType ptyType)
     case IPtyProcess::PtyType::WinPty:
         return new WinPtyProcess();
         break;
-    case IPtyProcess::PtyType::ConPtyNamedPipe:
-        return new ConPtyNamedPipeProcess();
-        break;
-    case IPtyProcess::PtyType::ConPtyAnonPipe:
+//    case IPtyProcess::PtyType::ConPtyNamedPipe:
+//        return new ConPtyNamedPipeProcess();
+//        break;
+    case IPtyProcess::PtyType::ConPty:
         return new ConPtyAnonymousPipeProcess();
         break;
 #endif
@@ -37,8 +37,8 @@ IPtyProcess *PtyQt::createPtyProcess(IPtyProcess::PtyType ptyType)
     }
 
 #ifdef Q_OS_WIN
-    if (ConPtyNamedPipeProcess().isAvailable())
-        return new ConPtyNamedPipeProcess();
+    if (ConPtyAnonymousPipeProcess().isAvailable())
+        return new ConPtyAnonymousPipeProcess();
     else
         return new WinPtyProcess();
 #endif

@@ -2,7 +2,9 @@
 #define CONPTYANONYMOUSPIPEPROCESS_H
 
 #include "conpty_shared.h"
-#include <QEventLoop>
+#include <QMutex>
+#include <QTimer>
+#include <QThread>
 
 class PtyBuffer : public QIODevice
 {
@@ -23,7 +25,11 @@ public:
 
     void emitReadyRead()
     {
-        emit readyRead();
+        //for emit signal from PtyBuffer own thread
+        QTimer::singleShot(1, this, [this]()
+        {
+             emit readyRead();
+        });
     }
 
 private:
@@ -56,8 +62,11 @@ private:
     WindowsContext m_winContext;
     HPCON m_ptyHandler;
     HANDLE m_hPipeIn, m_hPipeOut;
-    QEventLoop m_readEv;
+
+    QThread *m_readThread;
+    QMutex m_bufferMutex;
     PtyBuffer m_buffer;
+
 };
 
 #endif // CONPTYANONYMOUSPIPEPROCESS_H

@@ -4,6 +4,8 @@
 #include <QThread>
 #include <sstream>
 #include <QTimer>
+#include <QMutexLocker>
+#include <QCoreApplication>
 
 #define READ_INTERVAL_MSEC 500
 
@@ -78,6 +80,7 @@ ConPtyAnonymousPipeProcess::ConPtyAnonymousPipeProcess()
     , m_ptyHandler { INVALID_HANDLE_VALUE }
     , m_hPipeIn { INVALID_HANDLE_VALUE }
     , m_hPipeOut { INVALID_HANDLE_VALUE }
+    , m_readThread(nullptr)
 {
 
 }
@@ -128,9 +131,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
     HRESULT hr{ E_UNEXPECTED };
 
     //  Create the Pseudo Console and pipes to it
-    HANDLE hPipeIn{ INVALID_HANDLE_VALUE };
-    HANDLE hPipeOut{ INVALID_HANDLE_VALUE };
-    hr = createPseudoConsoleAndPipes(&m_ptyHandler, &hPipeIn, &hPipeOut, cols, rows);
+    hr = createPseudoConsoleAndPipes(&m_ptyHandler, &m_hPipeIn, &m_hPipeOut, cols, rows);
 
     if (S_OK != hr)
     {
@@ -170,46 +171,32 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
     m_pid = piClient.dwProcessId;
 
     //this code runned in separate thread
-    QThread *readThread = QThread::create([this, &hPipeIn, &hPipeOut, &piClient, &startupInfo]()
+    m_readThread = QThread::create([this, &piClient, &startupInfo]()
     {
-        HANDLE hConsole{ GetStdHandle(STD_OUTPUT_HANDLE) };
-
-        const DWORD BUFF_SIZE{ 512 };
-        char szBuffer[BUFF_SIZE]{};
-
-        DWORD dwBytesWritten{};
-        DWORD dwBytesRead{};
-        BOOL fRead{ FALSE };
-
-        QEventLoop ev;
-
-        QTimer readTimer;
-        QObject::connect(&readTimer, &QTimer::timeout, [this, &ev, &hPipeIn, &fRead, &szBuffer, &BUFF_SIZE, &dwBytesRead, &dwBytesWritten]()
+        forever
         {
+            //buffers
+            const DWORD BUFF_SIZE{ 512 };
+            char szBuffer[BUFF_SIZE]{};
+
+            //DWORD dwBytesWritten{};
+            DWORD dwBytesRead{};
+            BOOL fRead{ FALSE };
+
             // Read from the pipe
-            fRead = ReadFile(hPipeIn, szBuffer, BUFF_SIZE, &dwBytesRead, NULL);
+            fRead = ReadFile(m_hPipeIn, szBuffer, BUFF_SIZE, &dwBytesRead, NULL);
 
-            // Write received text to the output buffer
-            // Note: Write to the Console using WriteFile(hConsole...), not printf()/puts() to
-            // prevent partially-read VT sequences from corrupting output
-            //WriteFile(hConsole, szBuffer, dwBytesRead, &dwBytesWritten, NULL);
-            //qDebug() << "READ" << QByteArray(szBuffer, dwBytesRead);
+            {
+                QMutexLocker locker(&m_bufferMutex);
+                m_buffer.m_readBuffer.append(szBuffer, dwBytesRead);
+                m_buffer.emitReadyRead();
+            }
 
-            m_buffer.m_readBuffer.append(szBuffer, dwBytesRead);
+            if (QThread::currentThread()->isInterruptionRequested())
+                break;
 
-            //debug obly
-            //if ( !fRead || dwBytesRead < 0 )
-            //{
-            //    kill();
-            //}
-        });
-        readTimer.setInterval(READ_INTERVAL_MSEC);
-        readTimer.start();
-
-        //cleanup when thread or eventloop was finished
-        QObject::connect(QThread::currentThread(), &QThread::finished, &ev, &QEventLoop::quit);
-        m_readEv.exec();
-        QThread::currentThread()->deleteLater();
+            QCoreApplication::processEvents();
+        }
 
         // Now safe to clean-up client app's process-info & thread
         CloseHandle(piClient.hThread);
@@ -217,12 +204,11 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
 
         // Cleanup attribute list
         DeleteProcThreadAttributeList(startupInfo.lpAttributeList);
-        free(startupInfo.lpAttributeList);
+        //free(startupInfo.lpAttributeList);
     });
 
     //start read thread
-    readThread->start();
-
+    m_readThread->start();
 
     return true;
 }
@@ -252,7 +238,11 @@ bool ConPtyAnonymousPipeProcess::kill()
 
     if ( m_ptyHandler != INVALID_HANDLE_VALUE )
     {
-        m_readEv.quit();
+        m_readThread->requestInterruption();
+        QThread::msleep(200);
+        m_readThread->quit();
+        m_readThread->deleteLater();
+        m_readThread = nullptr;
 
         // Close ConPTY - this will terminate client process if running
         m_winContext.closePseudoConsole(m_ptyHandler);
@@ -273,7 +263,7 @@ bool ConPtyAnonymousPipeProcess::kill()
 
 IPtyProcess::PtyType ConPtyAnonymousPipeProcess::type()
 {
-    return PtyType::ConPtyAnonPipe;
+    return PtyType::ConPty;
 }
 
 #ifdef PTYQT_DEBUG
@@ -287,11 +277,12 @@ QString ConPtyAnonymousPipeProcess::dumpDebugInfo()
 
 QIODevice *ConPtyAnonymousPipeProcess::notifier()
 {
-    return new QFile();
+    return &m_buffer;
 }
 
 QByteArray ConPtyAnonymousPipeProcess::readAll()
 {
+    QMutexLocker locker(&m_bufferMutex);
     return m_buffer.m_readBuffer;
 }
 

@@ -14,7 +14,6 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kaf
   - UnixPty part can work on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
   - Еarget platforms: x86 or x64
   - Required Qt >= 5.10
-  - !!!IMPORTANT!!! Now library has some problems with ConPty, work in progress: https://github.com/Microsoft/console/issues/388
 
 ### Build on Windows (Git Bash)
 ```sh
@@ -140,7 +139,7 @@ int main(int argc, char *argv[])
 
 ## Examples
 ### XtermJS
-- build and run example from cmd.exe (important: )
+- build and run example from cmd.exe
 - install nodejs (your prefer way)
 - open console and run:
 ```sh
@@ -152,9 +151,10 @@ http-server ./
 - open http://127.0.0.1:8080/ in Web browser
 - use your terminal, for example install and run 'Midnight Commander' or 'Far' for test pseduo-graphic interface
 
-!!!IMPORTANT!!!
+**IMPORTANT**
 - do not use Git Bash for run 'xtermjs_sample.exe' on Windows, it has some issues: https://github.com/git-for-windows/git/wiki/FAQ#some-native-console-programs-dont-work-when-run-from-git-bash-how-to-fix-it
 - Only Far manager >= 3.0 supported by XTermJS, all old versioans are unsopported
+- ConPty requires to run your application from existing terminal session, in another case it just not work. For example in Qt Creator on Windows check "Run in Terminal" in project run settings before run examples or tests
 
 ### QVTerminal
 This is very-very-very basic implementation of VT100 terminal + Pty-Qt.

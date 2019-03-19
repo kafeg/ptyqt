@@ -17,8 +17,8 @@ public:
     {
         UnixPty = 0,
         WinPty = 1,
-        ConPtyNamedPipe = 2,
-        ConPtyAnonPipe = 3,
+        //ConPtyNamedPipe = 2,
+        ConPty = 3,
         AutoPty = 4
     };
 

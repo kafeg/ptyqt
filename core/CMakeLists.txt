@@ -11,8 +11,8 @@ if (MSVC)
         ${SOURCE_FILES}
         winptyprocess.h
         winptyprocess.cpp
-        conptynamedpipeprocess.h
-        conptynamedpipeprocess.cpp
+        #conptynamedpipeprocess.h
+        #conptynamedpipeprocess.cpp
         conptyanonymouspipeprocess.h
         conptyanonymouspipeprocess.cpp
         conpty_shared.h
