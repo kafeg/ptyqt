@@ -7,8 +7,8 @@ platform:
     #- x86
 
 configuration:
-    #- Debug
-    - Release
+    - Debug
+    #- Release
 
 environment:
     matrix:
@@ -34,7 +34,7 @@ clone_script:
 build_script:
     - mkdir build
     - cd build
-    - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=Release" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
+    - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
     - cmake.exe --build . --target winpty
     - cmake.exe --build .
     - dir thirdparty\winpty\src\winpty
@@ -45,4 +45,4 @@ test_script:
     - set PATH=%PATH%;%QT_DIR%
     #- cd tests
     #- ptyqt_tests.exe
-    - ctest -C Release --output-on-failure
+    - ctest -C %CONFIGURATION% --output-on-failure
