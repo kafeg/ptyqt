@@ -40,5 +40,9 @@ build_script:
     - dir thirdparty\winpty\src\winpty
 
 test_script:
+    - dir
+    - dir tests
     - set PATH=%PATH%;%QT_DIR%
-    - ctest -C %CONFIGURATION% --output-on-failure
+    - cd tests
+    - ptyqt_tests.exe
+    #- ctest -C %CONFIGURATION% --output-on-failure
