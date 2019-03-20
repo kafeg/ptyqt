@@ -189,6 +189,7 @@ QString WinPtyProcess::dumpDebugInfo()
             .arg(m_size.first).arg(m_size.second).arg(m_ptyHandler != nullptr)
             .arg(m_shellPath);
 }
+#endif
 
 QIODevice *WinPtyProcess::notifier()
 {
@@ -204,7 +205,6 @@ qint64 WinPtyProcess::write(const QByteArray &byteArray)
 {
     return m_inSocket.write(byteArray);
 }
-#endif
 
 bool WinPtyProcess::isAvailable()
 {
