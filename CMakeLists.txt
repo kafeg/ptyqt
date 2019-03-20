@@ -11,6 +11,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 #params
+#available params:
+# - NO_BUILD_TESTS=1
+# - NO_BUILD_EXAMPLES=1
+# - WINPTY_ROOT_DIR=<path/to/winpty> - if you set this parameter, winpty doesn't be auto-downloaded like dependency
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
     set(PTYQT_DEBUG TRUE)
     add_definitions(-DPTYQT_DEBUG)
@@ -64,22 +68,9 @@ enable_testing()
 
 #sub projects
 add_subdirectory(core)
-add_subdirectory(tests)
-add_subdirectory(examples)
-
-#add_executable(${PROJECT_NAME} "main.cpp")
-
-#target_link_libraries(${PROJECT_NAME} Qt5::Core)
-
-#Ubuntu package generator
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-
-set(CPACK_PACKAGE_CONTACT v31337@gmail.com)
-
-set(CPACK_GENERATOR DEB)
-
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-
-include (CPack)
+if (NOT "${NO_BUILD_TESTS}" STREQUAL "1")
+  add_subdirectory(tests)
+endif()
+if (NOT "${NO_BUILD_EXAMPLES}" STREQUAL "1")
+    add_subdirectory(examples)
+endif()

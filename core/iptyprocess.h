@@ -17,9 +17,8 @@ public:
     {
         UnixPty = 0,
         WinPty = 1,
-        //ConPtyNamedPipe = 2,
-        ConPty = 3,
-        AutoPty = 4
+        ConPty = 2,
+        AutoPty = 3
     };
 
     IPtyProcess()
@@ -48,35 +47,5 @@ protected:
     qint64 m_pid;
     QPair<qint16, qint16> m_size; //cols / rows
 };
-
-#ifdef Q_OS_WIN
-class IWindowsPtyProcess : public IPtyProcess
-{
-protected:
-    IWindowsPtyProcess()
-        : IPtyProcess()
-    { }
-
-    QIODevice *notifier()
-    {
-        return &m_outSocket;
-    }
-
-    QByteArray readAll()
-    {
-        return m_outSocket.readAll();
-    }
-
-    qint64 write(const QByteArray &byteArray)
-    {
-        return m_inSocket.write(byteArray);
-    }
-protected:
-    QString m_conInName;
-    QString m_conOutName;
-    QLocalSocket m_inSocket;
-    QLocalSocket m_outSocket;
-};
-#endif
 
 #endif // IPTYPROCESS_H

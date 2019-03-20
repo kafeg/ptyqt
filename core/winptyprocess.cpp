@@ -16,7 +16,7 @@ QString castErrorToString(winpty_error_ptr_t error_ptr)
 }
 
 WinPtyProcess::WinPtyProcess()
-    : IWindowsPtyProcess()
+    : IPtyProcess()
     , m_ptyHandler(nullptr)
     , m_innerHandle(nullptr)
 {
@@ -188,6 +188,21 @@ QString WinPtyProcess::dumpDebugInfo()
             .arg(m_pid).arg(m_conInName).arg(m_conOutName).arg(type())
             .arg(m_size.first).arg(m_size.second).arg(m_ptyHandler != nullptr)
             .arg(m_shellPath);
+}
+
+QIODevice *WinPtyProcess::notifier()
+{
+    return &m_outSocket;
+}
+
+QByteArray WinPtyProcess::readAll()
+{
+    return m_outSocket.readAll();
+}
+
+qint64 WinPtyProcess::write(const QByteArray &byteArray)
+{
+    return m_inSocket.write(byteArray);
 }
 #endif
 

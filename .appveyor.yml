@@ -13,6 +13,8 @@ environment:
     matrix:
         - PLATFORM: x64
           QT_DIR: C:\Qt\5.12.1\msvc2017_64
+        - PLATFORM: x86
+          QT_DIR: C:\Qt\5.12.1\msvc2017
 
 matrix:
     fast_finish: true
@@ -36,5 +38,6 @@ build_script:
     - cmake.exe --build .
     - dir thirdparty\winpty\src\winpty
 
-#test_script:
-#    - ctest -C %CONFIGURATION% --output-on-failure
+test_script:
+    - set PATH=%PATH%;%QT_DIR%
+    - ctest -C %CONFIGURATION% --output-on-failure

@@ -4,7 +4,7 @@
 #include "iptyprocess.h"
 #include "winpty.h"
 
-class WinPtyProcess : public IWindowsPtyProcess
+class WinPtyProcess : public IPtyProcess
 {
 public:
     WinPtyProcess();
@@ -17,11 +17,18 @@ public:
 #ifdef PTYQT_DEBUG
     QString dumpDebugInfo();
 #endif
+    QIODevice *notifier();
+    QByteArray readAll();
+    qint64 write(const QByteArray &byteArray);
     bool isAvailable();
 
 private:
     winpty_t *m_ptyHandler;
     HANDLE m_innerHandle;
+    QString m_conInName;
+    QString m_conOutName;
+    QLocalSocket m_inSocket;
+    QLocalSocket m_outSocket;
 };
 
 #endif // WINPTYPROCESS_H

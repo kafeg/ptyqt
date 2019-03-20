@@ -1,4 +1,4 @@
-#include "conptyanonymouspipeprocess.h"
+#include "conptyprocess.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QThread>
@@ -9,7 +9,7 @@
 
 #define READ_INTERVAL_MSEC 500
 
-HRESULT ConPtyAnonymousPipeProcess::createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows)
+HRESULT ConPtyProcess::createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows)
 {
     HRESULT hr{ E_UNEXPECTED };
     HANDLE hPipePTYIn{ INVALID_HANDLE_VALUE };
@@ -34,7 +34,7 @@ HRESULT ConPtyAnonymousPipeProcess::createPseudoConsoleAndPipes(HPCON* phPC, HAN
 
 // Initializes the specified startup info struct with the required properties and
 // updates its thread attribute list with the specified ConPTY handle
-HRESULT ConPtyAnonymousPipeProcess::initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC)
+HRESULT ConPtyProcess::initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC)
 {
     HRESULT hr{ E_UNEXPECTED };
 
@@ -75,7 +75,7 @@ HRESULT ConPtyAnonymousPipeProcess::initializeStartupInfoAttachedToPseudoConsole
     return hr;
 }
 
-ConPtyAnonymousPipeProcess::ConPtyAnonymousPipeProcess()
+ConPtyProcess::ConPtyProcess()
     : IPtyProcess()
     , m_ptyHandler { INVALID_HANDLE_VALUE }
     , m_hPipeIn { INVALID_HANDLE_VALUE }
@@ -85,12 +85,12 @@ ConPtyAnonymousPipeProcess::ConPtyAnonymousPipeProcess()
 
 }
 
-ConPtyAnonymousPipeProcess::~ConPtyAnonymousPipeProcess()
+ConPtyProcess::~ConPtyProcess()
 {
     kill();
 }
 
-bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows)
+bool ConPtyProcess::startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows)
 {
     if (!isAvailable())
     {
@@ -213,7 +213,7 @@ bool ConPtyAnonymousPipeProcess::startProcess(const QString &shellPath, QStringL
     return true;
 }
 
-bool ConPtyAnonymousPipeProcess::resize(qint16 cols, qint16 rows)
+bool ConPtyProcess::resize(qint16 cols, qint16 rows)
 {
     if (m_ptyHandler == nullptr)
     {
@@ -232,7 +232,7 @@ bool ConPtyAnonymousPipeProcess::resize(qint16 cols, qint16 rows)
     return true;
 }
 
-bool ConPtyAnonymousPipeProcess::kill()
+bool ConPtyProcess::kill()
 {
     bool exitCode = false;
 
@@ -261,13 +261,13 @@ bool ConPtyAnonymousPipeProcess::kill()
     return exitCode;
 }
 
-IPtyProcess::PtyType ConPtyAnonymousPipeProcess::type()
+IPtyProcess::PtyType ConPtyProcess::type()
 {
     return PtyType::ConPty;
 }
 
 #ifdef PTYQT_DEBUG
-QString ConPtyAnonymousPipeProcess::dumpDebugInfo()
+QString ConPtyProcess::dumpDebugInfo()
 {
     return QString("PID: %1, Type: %2, Cols: %3, Rows: %4")
             .arg(m_pid).arg(type())
@@ -275,25 +275,25 @@ QString ConPtyAnonymousPipeProcess::dumpDebugInfo()
 }
 #endif
 
-QIODevice *ConPtyAnonymousPipeProcess::notifier()
+QIODevice *ConPtyProcess::notifier()
 {
     return &m_buffer;
 }
 
-QByteArray ConPtyAnonymousPipeProcess::readAll()
+QByteArray ConPtyProcess::readAll()
 {
     QMutexLocker locker(&m_bufferMutex);
     return m_buffer.m_readBuffer;
 }
 
-qint64 ConPtyAnonymousPipeProcess::write(const QByteArray &byteArray)
+qint64 ConPtyProcess::write(const QByteArray &byteArray)
 {
     DWORD dwBytesWritten{};
     WriteFile(m_hPipeOut, byteArray.data(), byteArray.size(), &dwBytesWritten, NULL);
     return dwBytesWritten;
 }
 
-bool ConPtyAnonymousPipeProcess::isAvailable()
+bool ConPtyProcess::isAvailable()
 {
 #ifdef TOO_OLD_WINSDK
     return false; //very importnant! ConPty can be built, but it doesn't work if built with old sdk and Win10 < 1903

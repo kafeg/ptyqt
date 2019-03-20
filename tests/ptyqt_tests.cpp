@@ -193,7 +193,6 @@ private slots:
         {
             qDebug() << "Test" << shellPath;
             IPtyProcess::PtyType ptyType = IPtyProcess::ConPty;
-            //ptyType = IPtyProcess::ConPtyNamedPipe;
             QScopedPointer<IPtyProcess> conPty(PtyQt::createPtyProcess(ptyType));
             QCOMPARE(conPty->type(), ptyType);
             QVERIFY(conPty->isAvailable());

@@ -1,11 +1,14 @@
-#ifndef CONPTY_SHARED_H
-#define CONPTY_SHARED_H
+#ifndef CONPTYPROCESS_H
+#define CONPTYPROCESS_H
 
 #include "iptyprocess.h"
 #include <windows.h>
 #include <process.h>
 #include <QLibrary>
 #include <stdio.h>
+#include <QMutex>
+#include <QTimer>
+#include <QThread>
 
 //Taken from the RS5 Windows SDK, but redefined here in case we're targeting <= 17733
 //Just for compile, ConPty doesn't work with Windows SDK < 17733
@@ -92,4 +95,67 @@ private:
     QString m_lastError;
 };
 
-#endif // CONPTY_SHARED_H
+class PtyBuffer : public QIODevice
+{
+    friend class ConPtyProcess;
+    Q_OBJECT
+public:
+
+    PtyBuffer() {  }
+    ~PtyBuffer() { }
+
+    //just empty realization, we need only 'readyRead' signal of this class
+    qint64 readData(char *data, qint64 maxlen) { return 0; }
+    qint64 writeData(const char *data, qint64 len) { return 0; }
+
+    bool   isSequential() { return true; }
+    qint64 bytesAvailable() { return m_readBuffer.size(); }
+    qint64 size() { return m_readBuffer.size(); }
+
+    void emitReadyRead()
+    {
+        //for emit signal from PtyBuffer own thread
+        QTimer::singleShot(1, this, [this]()
+        {
+             emit readyRead();
+        });
+    }
+
+private:
+    QByteArray m_readBuffer;
+};
+
+class ConPtyProcess : public IPtyProcess
+{
+public:
+    ConPtyProcess();
+    ~ConPtyProcess();
+
+    bool startProcess(const QString &shellPath, QStringList environment, qint16 cols, qint16 rows);
+    bool resize(qint16 cols, qint16 rows);
+    bool kill();
+    PtyType type();
+#ifdef PTYQT_DEBUG
+    QString dumpDebugInfo();
+#endif
+    virtual QIODevice *notifier();
+    virtual QByteArray readAll();
+    virtual qint64 write(const QByteArray &byteArray);
+    bool isAvailable();
+
+private:
+    HRESULT createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows);
+    HRESULT initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOEX* pStartupInfo, HPCON hPC);
+
+private:
+    WindowsContext m_winContext;
+    HPCON m_ptyHandler;
+    HANDLE m_hPipeIn, m_hPipeOut;
+
+    QThread *m_readThread;
+    QMutex m_bufferMutex;
+    PtyBuffer m_buffer;
+
+};
+
+#endif // CONPTYPROCESS_H
