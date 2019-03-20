@@ -42,7 +42,7 @@ build_script:
 test_script:
     - dir
     - dir tests
-    - set PATH=%PATH%;%QT_DIR%
+    - set PATH=%PATH%;%QT_DIR%\bin
     - cd tests
     - copy winpty-agent.exe Debug\winpty-agent.exe
     - copy winpty.dll Debug\winpty.dll
