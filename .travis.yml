@@ -22,8 +22,6 @@ matrix:
         homebrew:
           packages:
             - qt
-  allow_failures:
-    - os: windows
 
 before_script:
   - #linux
@@ -41,7 +39,7 @@ before_script:
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      cmake .;
+      cmake . "-DNO_BUILD_EXAMPLES=1";
       cmake --build .;
       cmake --build . --target test;
     fi

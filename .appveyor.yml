@@ -4,17 +4,18 @@ shallow_clone: true
 
 platform:
     - x64
-    - x86
+    #- x86
 
 configuration:
+    #- Debug
     - Release
 
 environment:
     matrix:
         - PLATFORM: x64
           QT_DIR: C:\Qt\5.12.1\msvc2017_64
-        - PLATFORM: x86
-          QT_DIR: C:\Qt\5.12.1\msvc2017
+        #- PLATFORM: x86
+        #  QT_DIR: C:\Qt\5.12.1\msvc2017
 
 matrix:
     fast_finish: true
