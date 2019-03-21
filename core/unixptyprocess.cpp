@@ -176,7 +176,7 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
         m_shellProcess.emitReadyRead();
     });
 
-    environment.append("TERM=xterm-color");
+    environment.append("TERM=xterm-256color");
     environment.append("ITERM_PROFILE=Default");
     environment.append("XPC_FLAGS=0x0");
     environment.append("XPC_SERVICE_NAME=0");
