@@ -55,13 +55,16 @@ int main(int argc, char *argv[])
         //connect read channel from Pty process to write channel on websocket
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
         {
-            wSocket->sendTextMessage(pty->readAll());
+            //QByteArray data = pty->readAll();
+            //qDebug() << "< " << data;
+            wSocket->sendTextMessage(data);
         });
 
         //connect read channel of Websocket to write channel of Pty process
         QObject::connect(wSocket, &QWebSocket::textMessageReceived, [wSocket, pty](const QString &message)
         {
-            pty->write(message.toLatin1());
+            //qDebug() << "> " << message.size() << message.at(0) << message << message.toUtf8() << QString::fromUtf8(message.toUtf8());
+            pty->write(message.toUtf8());
         });
 
         //...
