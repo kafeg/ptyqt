@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         //connect read channel from Pty process to write channel on websocket
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
         {
-            //QByteArray data = pty->readAll();
+            QByteArray data = pty->readAll();
             //qDebug() << "< " << data;
             wSocket->sendTextMessage(data);
         });
