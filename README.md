@@ -169,7 +169,7 @@ http-server ./
 
 **IMPORTANT**
 - do not use Git Bash for run 'xtermjs_sample.exe' on Windows, it has some issues: https://github.com/git-for-windows/git/wiki/FAQ#some-native-console-programs-dont-work-when-run-from-git-bash-how-to-fix-it
-- Only Far manager >= 3.0 supported by XTermJS, all old versioans are unsopported
+- Only Far manager >= 3.0 supported by XTermJS, all old versioans are unsupported
 - ConPty requires to run your application from existing terminal session, in another case it just not work. For example in Qt Creator on Windows check "Run in Terminal" in project run settings before run examples or tests
 
 ### QVTerminal
