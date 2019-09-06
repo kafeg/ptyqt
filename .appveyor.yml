@@ -32,6 +32,7 @@ clone_script:
     - git submodule update --init --recursive
 
 build_script:
+    - dir C:\Qt\
     - mkdir build
     - cd build
     - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
