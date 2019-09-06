@@ -13,7 +13,7 @@ configuration:
 environment:
     matrix:
         - PLATFORM: x64
-          QT_DIR: C:\Qt\5.12.1\msvc2017_64
+          QT_DIR: C:\Qt\5.12.4\msvc2017_64
         #- PLATFORM: x86
         #  QT_DIR: C:\Qt\5.12.1\msvc2017
 
