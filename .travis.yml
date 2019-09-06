@@ -22,6 +22,7 @@ matrix:
         homebrew:
           packages:
             - qt
+          update: true
 
 before_script:
   - #linux
@@ -44,7 +45,6 @@ script:
       cmake --build . --target test;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew update
       ls /usr/local/Cellar/qt/
       cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.1";
       cmake --build .;
