@@ -14,22 +14,32 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kaf
   - UnixPty part can work on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
   - Еarget platforms: x86 or x64
   - Required Qt >= 5.10
+  - On Windows should be installed: Git for Windows, Visual Studio >=2015
 
-### Build on Windows (Git Bash)
+### Build on Windows (cmd.exe)
 ```sh
-git clone https://github.com/Microsoft/vcpkg.git vcpkg
+set VCPKG_ROOT=c:/dev/ptyqtroot/vcpkg
+set GIT_PATH="c:\Program Files\Git\bin\git.exe"
+set CMAKE_PATH=%VCPKG_ROOT%/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe
+set TRIPLET=x64-windows
+
+mkdir %VCPKG_ROOT%
+cd %VCPKG_ROOT%
+%GIT_PATH% clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
-./bootstrap-vcpkg.sh
-./vcpkg.exe integrate install
-./vcpkg.exe install qt-base:x64-windows qt5-network:x64-windows
-export VCPKG_ROOT=`pwd`
+.\bootstrap-vcpkg.bat
+.\vcpkg.exe integrate install
+.\vcpkg.exe env
+cd %VCPKG_ROOT%
+.\vcpkg.exe install qt5-base:%TRIPLET% qt5-websockets:%TRIPLET%
 cd ..
-git clone https://github.com/kafeg/ptyqt.git ptyqt
+%GIT_PATH% clone https://github.com/kafeg/ptyqt.git ptyqt
 mkdir ptyqt-build
 cd ptyqt-build
-${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe ../ptyqt "-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=x64-windows"
-${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build . --target winpty
-${VCPKG_ROOT}/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe --build .
+
+%CMAKE_PATH% ../ptyqt "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" "-DNO_BUILD_EXAMPLES=1"
+%CMAKE_PATH% --build . --target winpty
+%CMAKE_PATH% --build .
 ```
 
 ### Build on Ubuntu

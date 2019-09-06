@@ -23,9 +23,15 @@ else()
 endif()
 
 if (MSVC)
+	message("PRE_TARGET_ARCH ${TARGET_ARCH}")
+	message("VCPKG_TARGET_TRIPLET ${VCPKG_TARGET_TRIPLET}")
+
     #target arch for find winpty libs
     if ("${TARGET_ARCH}" STREQUAL "x86_amd64")
         set(TARGET_ARCH x64)
+    endif()
+	if ("${VCPKG_TARGET_TRIPLET}" MATCHES "x86")
+        set(TARGET_ARCH x86) #x86 / x64
     endif()
     if ("${TARGET_ARCH}" STREQUAL "")
         set(TARGET_ARCH x64) #x86 / x64
@@ -33,7 +39,7 @@ if (MSVC)
     set(BUILD_TYPE STATIC) #STATIC / SHARED
     set(WINPTY_ROOT_DIR "") #user can define his own installation of WinPty for prevent auto-downloading dependency
 
-    #message("TARGET_ARCH ${TARGET_ARCH}")
+    message("POST_TARGET_ARCH ${TARGET_ARCH}")
 endif()
 
 #dependencies

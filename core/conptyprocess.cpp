@@ -40,7 +40,7 @@ HRESULT ConPtyProcess::initializeStartupInfoAttachedToPseudoConsole(STARTUPINFOE
 
     if (pStartupInfo)
     {
-        size_t attrListSize{};
+        SIZE_T attrListSize{};
 
         pStartupInfo->StartupInfo.cb = sizeof(STARTUPINFOEX);
 
