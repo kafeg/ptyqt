@@ -58,9 +58,9 @@ endif()
 #install
 #set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 
-set(PTYQT_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PTYQT_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
-set(PTYQT_INSTALL_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+set(PTYQT_INSTALL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)
+set(PTYQT_INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+set(PTYQT_INSTALL_LIB_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 
 set(PTYQTLIB_HEADERS_DIR ${PROJECT_SOURCE_DIR}/core)
 
@@ -70,11 +70,10 @@ if (MSVC)
     include_directories(${WINPTY_ROOT_DIR}/include)
 endif()
 
-enable_testing()
-
 #sub projects
 add_subdirectory(core)
 if (NOT "${NO_BUILD_TESTS}" STREQUAL "1")
+  enable_testing()
   add_subdirectory(tests)
 endif()
 if (NOT "${NO_BUILD_EXAMPLES}" STREQUAL "1")
