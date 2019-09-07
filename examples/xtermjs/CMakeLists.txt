@@ -1,6 +1,6 @@
 project(ptyqt-xtermjs)
 
-find_package(Qt5WebSockets REQUIRED)
+find_package(Qt5WebSockets CONFIG REQUIRED)
 
 add_executable(xtermjs_sample xtermjs.cpp)
 add_dependencies(xtermjs_sample ptyqt)

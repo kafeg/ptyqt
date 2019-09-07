@@ -22,9 +22,11 @@ else()
     set(PTYQT_DEBUG FALSE)
 endif()
 
+set(BUILD_TYPE STATIC) #STATIC / SHARED
+
 if (MSVC)
-	message("PRE_TARGET_ARCH ${TARGET_ARCH}")
-	message("VCPKG_TARGET_TRIPLET ${VCPKG_TARGET_TRIPLET}")
+    #message("PRE_TARGET_ARCH ${TARGET_ARCH}")
+    #message("VCPKG_TARGET_TRIPLET ${VCPKG_TARGET_TRIPLET}")
 
     #target arch for find winpty libs
     if ("${TARGET_ARCH}" STREQUAL "x86_amd64")
@@ -36,15 +38,19 @@ if (MSVC)
     if ("${TARGET_ARCH}" STREQUAL "")
         set(TARGET_ARCH x64) #x86 / x64
     endif()
-    set(BUILD_TYPE STATIC) #STATIC / SHARED
     set(WINPTY_ROOT_DIR "") #user can define his own installation of WinPty for prevent auto-downloading dependency
 
-    message("POST_TARGET_ARCH ${TARGET_ARCH}")
+    #message("POST_TARGET_ARCH ${TARGET_ARCH}")
 endif()
 
 #dependencies
-add_subdirectory(thirdparty)
+if (MSVC)
+    add_subdirectory(thirdparty)
+endif()
+
 find_package(Qt5Core REQUIRED)
+find_package(harfbuzz CONFIG REQUIRED)
+find_package(double-conversion CONFIG REQUIRED)
 
 if (MSVC)
     find_package(Qt5Network REQUIRED)
@@ -72,10 +78,12 @@ endif()
 
 #sub projects
 add_subdirectory(core)
+
 if (NOT "${NO_BUILD_TESTS}" STREQUAL "1")
   enable_testing()
   add_subdirectory(tests)
 endif()
+
 if (NOT "${NO_BUILD_EXAMPLES}" STREQUAL "1")
     add_subdirectory(examples)
 endif()
