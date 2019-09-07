@@ -49,8 +49,6 @@ if (MSVC)
 endif()
 
 find_package(Qt5Core REQUIRED)
-find_package(harfbuzz CONFIG REQUIRED)
-find_package(double-conversion CONFIG REQUIRED)
 
 if (MSVC)
     find_package(Qt5Network REQUIRED)
