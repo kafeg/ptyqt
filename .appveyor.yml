@@ -35,7 +35,7 @@ build_script:
     - dir C:\Qt\
     - mkdir build
     - cd build
-    - cmake.exe .. "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
+    - cmake.exe .. "-DBUILD_SERVER=1" "-DCMAKE_PREFIX_PATH=%QT_DIR%" "-DCMAKE_BUILD_TYPE=%CONFIGURATION%" "-DTARGET_ARCH=%PLATFORM%" "-DCMAKE_GENERATOR_PLATFORM=%PLATFORM%"
     - cmake.exe --build . --target winpty
     - cmake.exe --build .
     - dir thirdparty\winpty\src\winpty

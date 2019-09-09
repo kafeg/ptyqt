@@ -40,13 +40,13 @@ before_script:
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      cmake . "-DNO_BUILD_EXAMPLES=1";
+      cmake . "-DNO_BUILD_EXAMPLES=1" "-DBUILD_SERVER=1";
       cmake --build .;
       cmake --build . --target test;
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       ls /usr/local/Cellar/qt/;
-      cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.13.0";
+      cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.13.0" "-DBUILD_SERVER=1";
       cmake --build .;
       cmake --build . --target test;
     fi
