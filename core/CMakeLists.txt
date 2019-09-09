@@ -69,9 +69,9 @@ if (NOT BUILD_SERVER)
     elseif(UNIX AND NOT APPLE)
         #todo
     endif()
-
-    target_link_libraries(ptyqt Qt5::Core ${ADDITIONAL_LIBS})
 endif()
+
+target_link_libraries(ptyqt Qt5::Core ${ADDITIONAL_LIBS})
 
 if (MSVC)
     target_link_libraries( ptyqt Qt5::Network ${WINPTY_LIBS})
