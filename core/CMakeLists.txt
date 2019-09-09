@@ -43,8 +43,8 @@ else()
 endif()
 
 find_package(OpenSSL)
-find_package(Bzip2 REQUIRED)
-find_package(Zlib REQUIRED)
+find_package(Bzip2)
+find_package(Zlib)
 find_library(DBLCONV_LIBRARIES NAMES pcre2 double-conversion)
 
 list(APPEND ADDITIONAL_LIBS ${PCRE2_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto ${BZIP2_LIBRARIES} ${ZLIB_LIBRARIES} ${DBLCONV_LIBRARIES})
