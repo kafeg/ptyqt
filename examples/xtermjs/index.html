@@ -6,7 +6,7 @@
       <script src="node_modules/xterm/dist/xterm.js"></script>
       <script src="node_modules/xterm/dist/addons/attach/attach.js"></script>
       <script src="node_modules/xterm/dist/addons/fit/fit.js"></script>
-      <script src="node_modules/xterm/dist/addons/winptyCompat/winptyCompat.js"></script>
+      <!--<script src="node_modules/xterm/dist/addons/winptyCompat/winptyCompat.js"></script> before 3.13.0-->
     </head>
     <body>
       <h1 style="color: #2D2E2C">xterm.js + Pty-Qt + C++</h1>
@@ -17,9 +17,9 @@
 
             Terminal.applyAddon(attach);  // Apply the `attach` addon
             Terminal.applyAddon(fit);
-            Terminal.applyAddon(winptyCompat);
+            //Terminal.applyAddon(winptyCompat); //before 3.13.0
 
-            var term = new Terminal();
+            var term = new Terminal({ windowsMode: true }); //after 3.13.0
             term.on('resize', (size) => {
                 console.log(size);
             });
@@ -29,9 +29,10 @@
             term.attach(socket);
 
             term.open(document.getElementById('terminal-container'));
-            term.winptyCompatInit();
+            //term.winptyCompatInit(); //before 3.13.0
             term.fit();
             term.focus();
+			//install and open "C:\Program Files (x86)\Far Manager\far.exe" for example UI
       </script>
     </body>
   </html>

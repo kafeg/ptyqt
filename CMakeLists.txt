@@ -41,6 +41,13 @@ if (MSVC)
     set(WINPTY_ROOT_DIR "") #user can define his own installation of WinPty for prevent auto-downloading dependency
 
     #message("POST_TARGET_ARCH ${TARGET_ARCH}")
+
+    if("${BUILD_TYPE}" STREQUAL "STATIC")
+        set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+        include(CMakeMsvc)
+        configure_msvc_runtime ("${VCPKG_TARGET_TRIPLET}")
+    endif()
+
 endif()
 
 #dependencies

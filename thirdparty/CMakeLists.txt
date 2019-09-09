@@ -33,7 +33,7 @@ if (MSVC)
     endif()
 
     #message("WINPTY_SUB_ARCH " ${WINPTY_SUB_ARCH})
-	#message("TARGET_ARCH " ${TARGET_ARCH})
+    #message("TARGET_ARCH " ${TARGET_ARCH})
 
     #can be linked only to DLL, because we compile in MSVC but WinPty builded with CygWin
     if("${BUILD_TYPE}" STREQUAL "STATIC")

@@ -37,6 +37,9 @@ int main(int argc, char *argv[])
             ptyType = IPtyProcess::ConPty;
         }
 
+        //force select WinPty
+        ptyType = IPtyProcess::WinPty;
+
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
         //shellPath = "C:\\Program\ Files\\Git\\bin\\bash.exe";
 #ifdef Q_OS_UNIX
