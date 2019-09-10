@@ -52,12 +52,15 @@ bool WinPtyProcess::startProcess(const QString &shellPath, QStringList environme
     m_size = QPair<qint16, qint16>(cols, rows);
 
 #ifdef PTYQT_DEBUG
-    environment.append(QString("%1=1").arg(DEBUG_VAR_LEGACY));
-    environment.append(QString("%1=trace").arg(DEBUG_VAR_ACTUAL));
-    environment.append(QString("%1=1").arg(SHOW_CONSOLE_VAR));
-    SetEnvironmentVariable(DEBUG_VAR_LEGACY, "1");
-    SetEnvironmentVariable(DEBUG_VAR_ACTUAL, "trace");
-    SetEnvironmentVariable(SHOW_CONSOLE_VAR, "1");
+    if (m_trace)
+    {
+        environment.append(QString("%1=1").arg(DEBUG_VAR_LEGACY));
+        environment.append(QString("%1=trace").arg(DEBUG_VAR_ACTUAL));
+        environment.append(QString("%1=1").arg(SHOW_CONSOLE_VAR));
+        SetEnvironmentVariable(DEBUG_VAR_LEGACY, "1");
+        SetEnvironmentVariable(DEBUG_VAR_ACTUAL, "trace");
+        SetEnvironmentVariable(SHOW_CONSOLE_VAR, "1");
+    }
 #endif
 
     //env

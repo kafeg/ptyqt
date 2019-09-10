@@ -23,6 +23,7 @@ public:
 
     IPtyProcess()
         : m_pid(0)
+        , m_trace(false)
     {  }
     virtual ~IPtyProcess() { }
 
@@ -40,12 +41,14 @@ public:
     qint64 pid() { return m_pid; }
     QPair<qint16, qint16> size() { return m_size; }
     const QString lastError() { return m_lastError; }
+    bool toggleTrace() { m_trace = !m_trace; }
 
 protected:
     QString m_shellPath;
     QString m_lastError;
     qint64 m_pid;
     QPair<qint16, qint16> m_size; //cols / rows
+    bool m_trace;
 };
 
 #endif // IPTYPROCESS_H
