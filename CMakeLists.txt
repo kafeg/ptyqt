@@ -15,6 +15,7 @@ set(CMAKE_AUTOMOC ON)
 # - NO_BUILD_TESTS=1
 # - NO_BUILD_EXAMPLES=1
 # - WINPTY_ROOT_DIR=<path/to/winpty> - if you set this parameter, winpty doesn't be auto-downloaded like dependency
+# - WINPTY_LIBS=<path/to/winpty.lib> - redefine path to winpty lib for libkage and ignore included find mechanic
 IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(PTYQT_DEBUG TRUE)
     add_definitions(-DPTYQT_DEBUG)
@@ -51,7 +52,7 @@ if (MSVC)
 endif()
 
 #dependencies
-if (MSVC)
+if (MSVC AND "${WINPTY_LIBS}" STREQUAL "STATIC")
     add_subdirectory(thirdparty)
 endif()
 

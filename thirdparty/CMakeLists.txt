@@ -35,7 +35,7 @@ if (MSVC)
     #message("WINPTY_SUB_ARCH " ${WINPTY_SUB_ARCH})
     #message("TARGET_ARCH " ${TARGET_ARCH})
 
-    #can be linked only to DLL, because we compile in MSVC but WinPty builded with CygWin
+    #can be linked only to DLL, because WinPty built and distributed only for MSVC/Shared/x64
     if("${BUILD_TYPE}" STREQUAL "STATIC")
         set(WINPTY_LIBS ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/lib/winpty.lib PARENT_SCOPE)
     else()
