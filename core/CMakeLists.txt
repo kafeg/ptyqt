@@ -24,8 +24,10 @@ endif()
 
 if("${BUILD_TYPE}" STREQUAL "STATIC")
     add_library( ptyqt STATIC ${SOURCE_FILES} )
+    add_definitions(-DPTYQT_BUILD_STATIC)
 else()
     add_library( ptyqt SHARED ${SOURCE_FILES} )
+    add_definitions(-DPTYQT_BUILD_DYNAMIC)
 endif()
 
 set(ADDITIONAL_LIBS "")

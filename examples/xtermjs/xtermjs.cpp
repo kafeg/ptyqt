@@ -55,6 +55,13 @@ int main(int argc, char *argv[])
         //start Pty process ()
         pty->startProcess(shellPath, QProcessEnvironment::systemEnvironment().toStringList(), COLS, ROWS);
 
+        if (!pty->lastError().isEmpty())
+        {
+            qDebug() << pty->lastError();
+            delete pty;
+            return;
+        }
+
         //connect read channel from Pty process to write channel on websocket
         QObject::connect(pty->notifier(), &QIODevice::readyRead, [wSocket, pty]()
         {

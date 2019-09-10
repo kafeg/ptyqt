@@ -208,7 +208,11 @@ qint64 WinPtyProcess::write(const QByteArray &byteArray)
 
 bool WinPtyProcess::isAvailable()
 {
+#ifdef PTYQT_BUILD_STATIC
+    return QFile::exists(QCoreApplication::applicationDirPath() + "/" + WINPTY_AGENT_NAME);
+#elif PTYQT_BUILD_DYNAMIC
     return QFile::exists(QCoreApplication::applicationDirPath() + "/" + WINPTY_AGENT_NAME)
             && QFile::exists(QCoreApplication::applicationDirPath() + "/" + WINPTY_DLL_NAME);
+#endif
 
 }
