@@ -266,14 +266,16 @@ IPtyProcess::PtyType ConPtyProcess::type()
     return PtyType::ConPty;
 }
 
-#ifdef PTYQT_DEBUG
 QString ConPtyProcess::dumpDebugInfo()
 {
+#ifdef PTYQT_DEBUG
     return QString("PID: %1, Type: %2, Cols: %3, Rows: %4")
             .arg(m_pid).arg(type())
             .arg(m_size.first).arg(m_size.second);
-}
+#else
+    return QString("Nothing...");
 #endif
+}
 
 QIODevice *ConPtyProcess::notifier()
 {

@@ -184,15 +184,17 @@ IPtyProcess::PtyType WinPtyProcess::type()
     return PtyType::WinPty;
 }
 
-#ifdef PTYQT_DEBUG
 QString WinPtyProcess::dumpDebugInfo()
 {
+#ifdef PTYQT_DEBUG
     return QString("PID: %1, ConIn: %2, ConOut: %3, Type: %4, Cols: %5, Rows: %6, IsRunning: %7, Shell: %8")
             .arg(m_pid).arg(m_conInName).arg(m_conOutName).arg(type())
             .arg(m_size.first).arg(m_size.second).arg(m_ptyHandler != nullptr)
             .arg(m_shellPath);
-}
+#else
+    return QString("Nothing...");
 #endif
+}
 
 QIODevice *WinPtyProcess::notifier()
 {

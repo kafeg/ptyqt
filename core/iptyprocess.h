@@ -31,9 +31,7 @@ public:
     virtual bool resize(qint16 cols, qint16 rows) = 0;
     virtual bool kill() = 0;
     virtual PtyType type() = 0;
-#ifdef PTYQT_DEBUG
     virtual QString dumpDebugInfo() = 0;
-#endif
     virtual QIODevice *notifier() = 0;
     virtual QByteArray readAll() = 0;
     virtual qint64 write(const QByteArray &byteArray) = 0;

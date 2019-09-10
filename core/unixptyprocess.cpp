@@ -277,15 +277,17 @@ IPtyProcess::PtyType UnixPtyProcess::type()
     return IPtyProcess::UnixPty;
 }
 
-#ifdef PTYQT_DEBUG
 QString UnixPtyProcess::dumpDebugInfo()
 {
+#ifdef PTYQT_DEBUG
     return QString("PID: %1, In: %2, Out: %3, Type: %4, Cols: %5, Rows: %6, IsRunning: %7, Shell: %8, SlaveName: %9")
             .arg(m_pid).arg(m_shellProcess.m_handleMaster).arg(m_shellProcess.m_handleSlave).arg(type())
             .arg(m_size.first).arg(m_size.second).arg(m_shellProcess.state() == QProcess::Running)
             .arg(m_shellPath).arg(m_shellProcess.m_handleSlaveName);
-}
+#else
+    return QString("Nothing...");
 #endif
+}
 
 QIODevice *UnixPtyProcess::notifier()
 {

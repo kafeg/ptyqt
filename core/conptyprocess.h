@@ -135,9 +135,7 @@ public:
     bool resize(qint16 cols, qint16 rows);
     bool kill();
     PtyType type();
-#ifdef PTYQT_DEBUG
     QString dumpDebugInfo();
-#endif
     virtual QIODevice *notifier();
     virtual QByteArray readAll();
     virtual qint64 write(const QByteArray &byteArray);

@@ -14,9 +14,7 @@ public:
     bool resize(qint16 cols, qint16 rows);
     bool kill();
     PtyType type();
-#ifdef PTYQT_DEBUG
     QString dumpDebugInfo();
-#endif
     QIODevice *notifier();
     QByteArray readAll();
     qint64 write(const QByteArray &byteArray);
