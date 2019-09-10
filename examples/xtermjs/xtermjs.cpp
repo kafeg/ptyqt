@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
         qint32 buildNumber = QSysInfo::kernelVersion().split(".").last().toInt();
         if (buildNumber >= CONPTY_MINIMAL_WINDOWS_VERSION)
         {
-            qDebug() << "Use ConPty except of WinPty";
+            qDebug() << "Use ConPty instead of WinPty";
             ptyType = IPtyProcess::ConPty;
         }
 
         //force select WinPty
-        ptyType = IPtyProcess::WinPty;
+        //ptyType = IPtyProcess::WinPty;
 
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
         //shellPath = "C:\\Program\ Files\\Git\\bin\\bash.exe";
