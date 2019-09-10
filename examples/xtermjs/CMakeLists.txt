@@ -8,7 +8,6 @@ add_dependencies(xtermjs_sample ptyqt)
 target_link_libraries(xtermjs_sample ptyqt Qt5::Core ${Qt5WebSockets_LIBRARIES})
 
 if (MSVC)
-    add_dependencies(xtermjs_sample winpty)
     target_link_libraries(xtermjs_sample Qt5::Network ${WINPTY_LIBS})
 endif()
 

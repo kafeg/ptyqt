@@ -9,7 +9,6 @@ add_dependencies(ptyqt_tests ptyqt)
 add_test(ptyqt_tests ptyqt_tests)
 
 if (MSVC)
-    add_dependencies(ptyqt_tests winpty)
     if ("${PTYQT_DEBUG}")
         set(WINPTY_DEBUG_SERVER_PATH ${WINPTY_ROOT_DIR}/${TARGET_ARCH}/bin/winpty-debugserver.exe)
         add_definitions(-DWINPTY_DEBUG_SRV_PATH="${WINPTY_DEBUG_SERVER_PATH}")

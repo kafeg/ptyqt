@@ -75,7 +75,6 @@ target_link_libraries(ptyqt Qt5::Core ${ADDITIONAL_LIBS})
 
 if (MSVC)
     target_link_libraries( ptyqt Qt5::Network ${WINPTY_LIBS})
-    add_dependencies(ptyqt winpty)
 endif()
 
 install(TARGETS ptyqt DESTINATION ${PTYQT_INSTALL_LIB_DIR})

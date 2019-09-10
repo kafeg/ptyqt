@@ -2,7 +2,7 @@ if (MSVC)
 
     include(ExternalProject)
 
-    if("${WINPTY_ROOT_DIR}" STREQUAL "")
+    if("${WINPTY_LIBS}" STREQUAL "")
 
         set(WINPTY_URL https://github.com/rprichard/winpty/releases/download/0.4.3/winpty-0.4.3-msvc2015.zip)
 
@@ -27,24 +27,26 @@ if (MSVC)
         message("Use user-defined WinPty")
     endif()
 
-    set(WINPTY_SUB_ARCH ${TARGET_ARCH})
-    if ("${WINPTY_SUB_ARCH}" STREQUAL "x86")
-        set(WINPTY_SUB_ARCH ia32)
+    if("${WINPTY_LIBS}" STREQUAL "")
+        set(WINPTY_SUB_ARCH ${TARGET_ARCH})
+        if ("${WINPTY_SUB_ARCH}" STREQUAL "x86")
+            set(WINPTY_SUB_ARCH ia32)
+        endif()
+
+        #message("WINPTY_SUB_ARCH " ${WINPTY_SUB_ARCH})
+        #message("TARGET_ARCH " ${TARGET_ARCH})
+
+        #can be linked only to DLL, because WinPty built and distributed only for MSVC/Shared/x64
+        if("${BUILD_TYPE}" STREQUAL "STATIC")
+            set(WINPTY_LIBS ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/lib/winpty.lib PARENT_SCOPE)
+        else()
+            set(WINPTY_LIBS ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty.dll PARENT_SCOPE)
+        endif()
+
+        #winpty.dll and winpty-agent.exe must be near your project executable
+        set(WINPTY_DIST_FILES ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty.dll
+            ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty-agent.exe
+            PARENT_SCOPE)
+        #message("WINPTY_DIST_FILES" ${WINPTY_DIST_FILES})
     endif()
-
-    #message("WINPTY_SUB_ARCH " ${WINPTY_SUB_ARCH})
-    #message("TARGET_ARCH " ${TARGET_ARCH})
-
-    #can be linked only to DLL, because WinPty built and distributed only for MSVC/Shared/x64
-    if("${BUILD_TYPE}" STREQUAL "STATIC")
-        set(WINPTY_LIBS ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/lib/winpty.lib PARENT_SCOPE)
-    else()
-        set(WINPTY_LIBS ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty.dll PARENT_SCOPE)
-    endif()
-
-    #winpty.dll and winpty-agent.exe must be near your project executable
-    set(WINPTY_DIST_FILES ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty.dll
-        ${WINPTY_ROOT_DIR}/${WINPTY_SUB_ARCH}/bin/winpty-agent.exe
-        PARENT_SCOPE)
-    #message("WINPTY_DIST_FILES" ${WINPTY_DIST_FILES})
 endif()
