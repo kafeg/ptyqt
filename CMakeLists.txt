@@ -15,6 +15,7 @@ set(CMAKE_AUTOMOC ON)
 # - NO_BUILD_TESTS=1
 # - NO_BUILD_EXAMPLES=1
 # - WINPTY_LIBS=<path/to/winpty.lib> - redefine path to winpty lib for libkage and ignore included find mechanic
+# - WINPTY_DBGLIBS=<path/to/debug/winpty.lib> - redefine path to winpty lib for libkage and ignore included find mechanic
 IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(PTYQT_DEBUG TRUE)
     add_definitions(-DPTYQT_DEBUG)
@@ -51,17 +52,17 @@ if (MSVC)
 endif()
 
 #dependencies
-if (MSVC)
-    add_subdirectory(thirdparty)
-endif()
-
 find_package(Qt5Core REQUIRED)
 
 if (MSVC)
-    find_package(Qt5Network REQUIRED)
-endif()
+    #for debug build we can redefine winpty libs to debug version
+    if (CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT ${WINPTY_DBGLIBS} STREQUAL "")
+        set(WINPTY_LIBS ${WINPTY_DBGLIBS})
+    endif()
 
-if (MSVC)
+    add_subdirectory(thirdparty)
+    find_package(Qt5Network REQUIRED)
+
     message("WinPty root dir " ${WINPTY_ROOT_DIR})
     message("WinPty libs " ${WINPTY_LIBS})
 endif()
