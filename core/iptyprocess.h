@@ -39,7 +39,7 @@ public:
     qint64 pid() { return m_pid; }
     QPair<qint16, qint16> size() { return m_size; }
     const QString lastError() { return m_lastError; }
-    bool toggleTrace() { m_trace = !m_trace; }
+    bool toggleTrace() { m_trace = !m_trace; return m_trace; }
 
 protected:
     QString m_shellPath;
