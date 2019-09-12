@@ -156,6 +156,7 @@ bool UnixPtyProcess::startProcess(const QString &shellPath, QStringList environm
 
     m_readMasterNotify = new QSocketNotifier(m_shellProcess.m_handleMaster, QSocketNotifier::Read, &m_shellProcess);
     m_readMasterNotify->setEnabled(true);
+    m_readMasterNotify->moveToThread(m_shellProcess.thread());
     QObject::connect(m_readMasterNotify, &QSocketNotifier::activated, [this](int socket)
     {
         Q_UNUSED(socket)
@@ -314,6 +315,10 @@ bool UnixPtyProcess::isAvailable()
     return true;
 }
 
+void UnixPtyProcess::moveToThread(QThread *targetThread)
+{
+    m_shellProcess.moveToThread(targetThread);
+}
 
 void ShellProcess::setupChildProcess()
 {

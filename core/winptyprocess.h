@@ -19,6 +19,7 @@ public:
     QByteArray readAll();
     qint64 write(const QByteArray &byteArray);
     bool isAvailable();
+    void moveToThread(QThread *targetThread);
 
 private:
     winpty_t *m_ptyHandler;

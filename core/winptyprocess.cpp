@@ -221,3 +221,9 @@ bool WinPtyProcess::isAvailable()
 #endif
 
 }
+
+void WinPtyProcess::moveToThread(QThread *targetThread)
+{
+    m_inSocket.moveToThread(targetThread);
+    m_outSocket.moveToThread(targetThread);
+}

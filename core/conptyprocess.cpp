@@ -306,3 +306,8 @@ bool ConPtyProcess::isAvailable()
         return false;
     return m_winContext.init();
 }
+
+void ConPtyProcess::moveToThread(QThread *targetThread)
+{
+    //nothing for now...
+}

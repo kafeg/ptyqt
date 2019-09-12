@@ -140,6 +140,7 @@ public:
     virtual QByteArray readAll();
     virtual qint64 write(const QByteArray &byteArray);
     bool isAvailable();
+    void moveToThread(QThread *targetThread);
 
 private:
     HRESULT createPseudoConsoleAndPipes(HPCON* phPC, HANDLE* phPipeIn, HANDLE* phPipeOut, qint16 cols, qint16 rows);
