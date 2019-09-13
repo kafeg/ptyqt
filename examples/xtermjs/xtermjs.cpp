@@ -99,14 +99,13 @@ int main(int argc, char *argv[])
         QObject::connect(wSocket, &QWebSocket::disconnected, endSessionHandler);
 
 #ifdef Q_OS_UNIX
-        QProcess *shellProcess = qobject_cast<QProcess *>(session->ptyProcess->notifier());
+        QProcess *shellProcess = qobject_cast<QProcess *>(pty->notifier());
         QObject::connect(shellProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                          [endSessionHandler](int, QProcess::ExitStatus ) { endSessionHandler(); });
 #else
         QLocalSocket *localSocket = qobject_cast<QLocalSocket *>(pty->notifier());
         QObject::connect(localSocket, &QLocalSocket::disconnected, endSessionHandler);
 #endif
-
 
         //add connection to list of active connections
         sessions.insert(wSocket, pty);
