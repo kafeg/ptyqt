@@ -19,6 +19,8 @@ WinPtyProcess::WinPtyProcess()
     : IPtyProcess()
     , m_ptyHandler(nullptr)
     , m_innerHandle(nullptr)
+    , m_inSocket(nullptr)
+    , m_outSocket(nullptr)
 {
 
 }
@@ -126,17 +128,23 @@ bool WinPtyProcess::startProcess(const QString &shellPath, QStringList environme
     //get pipe names
     LPCWSTR conInPipeName = winpty_conin_name(m_ptyHandler);
     m_conInName = QString::fromStdWString(std::wstring(conInPipeName));
-    m_inSocket.connectToServer(m_conInName, QIODevice::WriteOnly);
-    m_inSocket.waitForConnected();
+    m_inSocket = new QLocalSocket();
+    m_inSocket->connectToServer(m_conInName, QIODevice::WriteOnly);
+    m_inSocket->waitForConnected();
 
     LPCWSTR conOutPipeName = winpty_conout_name(m_ptyHandler);
     m_conOutName = QString::fromStdWString(std::wstring(conOutPipeName));
-    m_outSocket.connectToServer(m_conOutName, QIODevice::ReadOnly);
-    m_outSocket.waitForConnected();
+    m_outSocket = new QLocalSocket();
+    m_outSocket->connectToServer(m_conOutName, QIODevice::ReadOnly);
+    m_outSocket->waitForConnected();
 
-    if (m_inSocket.state() != QLocalSocket::ConnectedState && m_outSocket.state() != QLocalSocket::ConnectedState)
+    if (m_inSocket->state() != QLocalSocket::ConnectedState && m_outSocket->state() != QLocalSocket::ConnectedState)
     {
-        m_lastError = QString("ConPty Error: Unable to connect local sockets -> %1 / %2").arg(m_inSocket.errorString()).arg(m_outSocket.errorString());
+        m_lastError = QString("ConPty Error: Unable to connect local sockets -> %1 / %2").arg(m_inSocket->errorString()).arg(m_outSocket->errorString());
+        m_inSocket->deleteLater();
+        m_outSocket->deleteLater();
+        m_inSocket = nullptr;
+        m_outSocket = nullptr;
         return false;
     }
 
@@ -165,8 +173,20 @@ bool WinPtyProcess::kill()
     bool exitCode = false;
     if (m_innerHandle != nullptr && m_ptyHandler != nullptr)
     {
-        m_inSocket.disconnectFromServer();
-        m_outSocket.disconnectFromServer();
+        //disconnect all signals (readyRead, ...)
+        m_inSocket->disconnect();
+        m_outSocket->disconnect();
+
+        //disconnect for server
+        m_inSocket->disconnectFromServer();
+        m_outSocket->disconnectFromServer();
+
+        m_inSocket->deleteLater();
+        m_outSocket->deleteLater();
+
+        m_inSocket = nullptr;
+        m_outSocket = nullptr;
+
         winpty_free(m_ptyHandler);
         exitCode = CloseHandle(m_innerHandle);
 
@@ -198,17 +218,17 @@ QString WinPtyProcess::dumpDebugInfo()
 
 QIODevice *WinPtyProcess::notifier()
 {
-    return &m_outSocket;
+    return m_outSocket;
 }
 
 QByteArray WinPtyProcess::readAll()
 {
-    return m_outSocket.readAll();
+    return m_outSocket->readAll();
 }
 
 qint64 WinPtyProcess::write(const QByteArray &byteArray)
 {
-    return m_inSocket.write(byteArray);
+    return m_inSocket->write(byteArray);
 }
 
 bool WinPtyProcess::isAvailable()
@@ -224,6 +244,6 @@ bool WinPtyProcess::isAvailable()
 
 void WinPtyProcess::moveToThread(QThread *targetThread)
 {
-    m_inSocket.moveToThread(targetThread);
-    m_outSocket.moveToThread(targetThread);
+    m_inSocket->moveToThread(targetThread);
+    m_outSocket->moveToThread(targetThread);
 }

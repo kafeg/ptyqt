@@ -26,8 +26,8 @@ private:
     HANDLE m_innerHandle;
     QString m_conInName;
     QString m_conOutName;
-    QLocalSocket m_inSocket;
-    QLocalSocket m_outSocket;
+    QLocalSocket *m_inSocket;
+    QLocalSocket *m_outSocket;
 };
 
 #endif // WINPTYPROCESS_H

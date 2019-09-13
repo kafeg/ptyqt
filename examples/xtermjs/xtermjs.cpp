@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         }
 
         //force select WinPty
-        //ptyType = IPtyProcess::WinPty;
+        ptyType = IPtyProcess::WinPty;
 
         QString shellPath = "c:\\Windows\\system32\\cmd.exe";
         //shellPath = "C:\\Program\ Files\\Git\\bin\\bash.exe";
@@ -77,9 +77,36 @@ int main(int argc, char *argv[])
             pty->write(message.toUtf8());
         });
 
-        //...
         //for example handle disconnections, process crashes and stuff like that...
-        //...
+        auto endSessionHandler = [wSocket, &sessions]()
+        {
+            IPtyProcess *pty = sessions.value(wSocket);
+            if (pty == 0)
+                return; //because can be called twice
+
+            sessions.remove(wSocket);
+
+            qDebug() << "wSockMn" << wSocket << pty;
+
+            if (wSocket->isValid())
+                wSocket->close();
+            wSocket->deleteLater();
+
+            pty->kill();
+            delete pty;
+        };
+
+        QObject::connect(wSocket, &QWebSocket::disconnected, endSessionHandler);
+
+#ifdef Q_OS_UNIX
+        QProcess *shellProcess = qobject_cast<QProcess *>(session->ptyProcess->notifier());
+        QObject::connect(shellProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                         [endSessionHandler](int, QProcess::ExitStatus ) { endSessionHandler(); });
+#else
+        QLocalSocket *localSocket = qobject_cast<QLocalSocket *>(pty->notifier());
+        QObject::connect(localSocket, &QLocalSocket::disconnected, endSessionHandler);
+#endif
+
 
         //add connection to list of active connections
         sessions.insert(wSocket, pty);
