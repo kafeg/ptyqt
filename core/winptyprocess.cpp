@@ -85,7 +85,7 @@ bool WinPtyProcess::startProcess(const QString &shellPath, QStringList environme
 
     //set params
     winpty_config_set_initial_size(startConfig, cols, rows);
-    winpty_config_set_mouse_mode(startConfig, WINPTY_MOUSE_MODE_FORCE);
+    winpty_config_set_mouse_mode(startConfig, WINPTY_MOUSE_MODE_AUTO);
     //winpty_config_set_agent_timeout();
 
     //start agent
