@@ -140,7 +140,7 @@ bool WinPtyProcess::startProcess(const QString &shellPath, QStringList environme
 
     if (m_inSocket->state() != QLocalSocket::ConnectedState && m_outSocket->state() != QLocalSocket::ConnectedState)
     {
-        m_lastError = QString("ConPty Error: Unable to connect local sockets -> %1 / %2").arg(m_inSocket->errorString()).arg(m_outSocket->errorString());
+        m_lastError = QString("WinPty Error: Unable to connect local sockets -> %1 / %2").arg(m_inSocket->errorString()).arg(m_outSocket->errorString());
         m_inSocket->deleteLater();
         m_outSocket->deleteLater();
         m_inSocket = nullptr;
