@@ -47,8 +47,8 @@ if (NOT BUILD_SERVER)
     endif()
 
     find_package(OpenSSL REQUIRED)
-    find_package(Bzip2 REQUIRED)
-    find_package(Zlib REQUIRED)
+    find_package(BZip2 REQUIRED)
+    find_package(ZLIB REQUIRED)
     find_library(DBLCONV_LIBRARIES NAMES pcre2 double-conversion)
 
     list(APPEND ADDITIONAL_LIBS ${PCRE2_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto ${BZIP2_LIBRARIES} ${ZLIB_LIBRARIES} ${DBLCONV_LIBRARIES})
@@ -69,7 +69,10 @@ if (NOT BUILD_SERVER)
         list(APPEND ADDITIONAL_LIBS ${LIBS_MACOS})
 
     elseif(UNIX AND NOT APPLE)
-        #todo
+        set(LIBS_LINUX 
+		    "-lpthread -ldl -static-libstdc++"
+		)
+		list(APPEND ADDITIONAL_LIBS ${LIBS_LINUX})
     endif()
 endif()
 
