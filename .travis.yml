@@ -46,7 +46,7 @@ script:
     fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       ls /usr/local/Cellar/qt/;
-      cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.13.1" "-DBUILD_SERVER=1";
+      cmake . "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.14.2" "-DBUILD_SERVER=1";
       cmake --build .;
       cmake --build . --target test;
     fi
