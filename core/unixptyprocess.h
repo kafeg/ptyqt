@@ -5,6 +5,13 @@
 #include <QProcess>
 #include <QSocketNotifier>
 
+
+// support for build with MUSL on Alpine Linux
+#ifndef _PATH_UTMPX
+#include <sys/time.h>
+# define _PATH_UTMPX	"/var/log/utmp"
+#endif
+
 class ShellProcess : public QProcess
 {
     friend class UnixPtyProcess;
