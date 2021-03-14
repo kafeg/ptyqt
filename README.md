@@ -44,7 +44,7 @@ cd ptyqt-build
 
 ### Build on Ubuntu
 ```sh
-sudo apt-get install qtbase5-dev cmake libqt5websockets5-dev
+sudo apt-get install qtbase5-dev cmake libqt5websockets5-dev libdouble-conversion-dev
 git clone https://github.com/kafeg/ptyqt.git ptyqt
 mkdir ptyqt-build
 cd ptyqt-build
