@@ -9,10 +9,10 @@ Ubuntu / MacOS X: [![Build Status](https://travis-ci.org/kafeg/ptyqt.svg?branch=
 Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt?svg=true)](https://ci.appveyor.com/project/kafeg/ptyqt)
 
 ## Pre-Requirements and build
-  - ConPty part works only on Windows 10 >= 1903 (build > 18309) and can be built only with Windows SDK >= 10.0.18346.0 (maybe >= 17134, but not sure)
-  - WinPty part requires winpty sdk for build and winpty.dll with winpty-agent.exe for deployment with target application. WinPty can work on Windows XP and later (depended on used build SDK: vc140 / vc140_xp). You can't link WinPty libraries inside your App, because it use cygwin for build.
-  - UnixPty part can work on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
-  - Еarget platforms: x86 or x64
+  - ConPty part works only on Windows 10 >= 1903 (build > 18309) and can be built only with Windows SDK >= 10.0.18346.0
+  - WinPty part requires winpty sdk to build and winpty.dll and winpty-agent.exe to be deployed with target application. WinPty works on Windows XP and later (depended on build SDK: vc140 / vc140_xp). You can't link WinPty libraries inside your App, because it uses cygwin for build.
+  - UnixPty part works on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
+  - Target platforms: x86 or x64
   - Required Qt >= 5.10
   - On Windows should be installed: Git for Windows, Visual Studio >=2015
 
