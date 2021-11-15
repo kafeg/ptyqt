@@ -23,7 +23,11 @@ else()
     set(PTYQT_DEBUG FALSE)
 endif()
 
-set(BUILD_TYPE STATIC) #STATIC / SHARED
+if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
+    set(BUILD_TYPE SHARED)
+else()
+    set(BUILD_TYPE STATIC)
+endif()
 
 if (MSVC)
     #message("PRE_TARGET_ARCH ${TARGET_ARCH}")

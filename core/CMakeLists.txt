@@ -1,5 +1,7 @@
 project(ptyqt-core VERSION 0.1 LANGUAGES CXX)
 
+include(SelectLibraryConfigurations)
+
 set(SOURCE_FILES
     ptyqt.h
     ptyqt.cpp
@@ -32,9 +34,16 @@ endif()
 
 set(ADDITIONAL_LIBS "")
 
-#disable this on Travis?AppVeyor
+#disable this on Travis/AppVeyor
 if (NOT BUILD_SERVER)
-    find_library(PCRE2_LIBRARIES NAMES pcre2 pcre2-16)
+    if("${BUILD_TYPE}" STREQUAL "STATIC")
+        find_library(PCRE2_LIBRARY_DEBUG NAMES pcre2-8d pcre2-8-staticd HINTS ${INSTALLED_LIB_PATH})
+        find_library(PCRE2_LIBRARY_RELEASE NAMES pcre2-8 pcre2-8-static HINTS ${INSTALLED_LIB_PATH})
+        select_library_configurations(PCRE2)
+		set(PCRE2_LIBRARIES ${PCRE2_LIBRARY})
+	else()
+        find_library(PCRE2_LIBRARIES NAMES pcre2 pcre2-16)
+    endif()
     find_path(PCRE2_INCLUDE_DIRS pcre2.h)
     if(PCRE2_LIBRARIES AND PCRE2_INCLUDE_DIRS)
       message(STATUS "PCRE2 libs: ${PCRE2_LIBRARIES}")
