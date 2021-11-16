@@ -2,7 +2,9 @@
 
 Pty-Qt is small library for access to console applications by pseudo-terminal interface on Mac, Linux and Windows. On Mac and Linux it uses standard PseudoTerminal API and on Windows it uses WinPty(prefer) or ConPty.
 
-**NOTE** Versions above 0.6.0 builds with vcpkg, some depreacted code was removed. Please use version 0.5.5 if you want to build it manually, build steps provided in it's README
+**NOTE** Versions >= 0.6.0 distribute by vcpkg. Versions 0.5.x can be built manually by README manual.
+
+**NOTE 2** Vcpkg PR and build status for all platforms: https://github.com/microsoft/vcpkg/pull/21440
 
 ## Pre-Requirements and build
   - ConPty part works only on Windows 10 >= 1903 (build > 18309) and can be built only with Windows SDK >= 10.0.18346.0
