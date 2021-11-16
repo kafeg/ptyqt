@@ -1,3 +1,0 @@
-[submodule "examples/vt100terminal/qvterminal"]
-	path = examples/vt100terminal/qvterminal
-	url = https://github.com/kafeg/QVTerminal.git

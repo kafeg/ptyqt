@@ -1,16 +1,12 @@
 # Pty-Qt - C++ library for work with PseudoTerminals
 
-Pty-Qt is small library for access to console applications by pseudo-terminal interface on Mac, Linux and Windows. On Mac and Linux you can use standard PseudoTerminal API and on Windows you can use WinPty or ConPty.
+Pty-Qt is small library for access to console applications by pseudo-terminal interface on Mac, Linux and Windows. On Mac and Linux it uses standard PseudoTerminal API and on Windows it uses WinPty(prefer) or ConPty.
 
-### CI Status
-
-Ubuntu / MacOS X: [![Build Status](https://travis-ci.org/kafeg/ptyqt.svg?branch=master)](https://travis-ci.org/kafeg/ptyqt)
-
-Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kafeg/ptyqt?svg=true)](https://ci.appveyor.com/project/kafeg/ptyqt)
+**NOTE** Versions above 0.6.0 builds with vcpkg, some depreacted code was removed. Please use version 0.5.5 if you want to build it manually, build steps provided in it's README
 
 ## Pre-Requirements and build
   - ConPty part works only on Windows 10 >= 1903 (build > 18309) and can be built only with Windows SDK >= 10.0.18346.0
-  - WinPty part requires winpty sdk to build and winpty.dll and winpty-agent.exe to be deployed with target application. WinPty works on Windows XP and later (depended on build SDK: vc140 / vc140_xp). You can't link WinPty libraries inside your App, because it uses cygwin for build.
+  - WinPty part requires winpty sdk to build and winpty.dll and winpty-agent.exe to be deployed with target application. WinPty works on Windows XP and later (depended on build SDK: vc140 / vc140_xp).
   - UnixPty part works on both Linux/Mac versions, because it based on standard POSIX pseudo terminals API
   - Target platforms: x86 or x64
   - Required Qt >= 5.10
@@ -18,48 +14,18 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/kaf
 
 ### Build on Windows (cmd.exe)
 ```sh
-set VCPKG_ROOT=c:/dev/ptyqtroot/vcpkg
-set GIT_PATH="c:\Program Files\Git\bin\git.exe"
-set CMAKE_PATH=%VCPKG_ROOT%/downloads/tools/cmake-3.12.4-windows/cmake-3.12.4-win32-x86/bin/cmake.exe
-set TRIPLET=x64-windows
-
-mkdir %VCPKG_ROOT%
-cd %VCPKG_ROOT%
-%GIT_PATH% clone https://github.com/Microsoft/vcpkg.git
+git clone https://github.com/microsoft/vcpkg
 cd vcpkg
 .\bootstrap-vcpkg.bat
-.\vcpkg.exe integrate install
-.\vcpkg.exe env
-cd %VCPKG_ROOT%
-.\vcpkg.exe install qt5-base:%TRIPLET% qt5-websockets:%TRIPLET%
-cd ..
-%GIT_PATH% clone https://github.com/kafeg/ptyqt.git ptyqt
-mkdir ptyqt-build
-cd ptyqt-build
-
-%CMAKE_PATH% ../ptyqt "-DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake" "-DVCPKG_TARGET_TRIPLET=%TRIPLET%" "-DNO_BUILD_EXAMPLES=1"
-%CMAKE_PATH% --build . --target winpty
-%CMAKE_PATH% --build .
+.\vcpkg.exe install ptyqt
 ```
 
-### Build on Ubuntu
+### Build on Linux/MacOS/Other UNIX
 ```sh
-sudo apt-get install qtbase5-dev cmake libqt5websockets5-dev
-git clone https://github.com/kafeg/ptyqt.git ptyqt
-mkdir ptyqt-build
-cd ptyqt-build
-cmake ../ptyqt
-cmake --build .
-```
-
-### Build on Mac
-```sh
-brew install qt cmake
-git clone https://github.com/kafeg/ptyqt.git ptyqt
-mkdir ptyqt-build
-cd ptyqt-build
-cmake ../ptyqt "-DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.12.1"
-cmake --build .
+git clone https://github.com/microsoft/vcpkg
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg install ptyqt
 ```
 
 ## Usage
@@ -181,12 +147,6 @@ http-server ./
 - do not use Git Bash for run 'xtermjs_sample.exe' on Windows, it has some issues: https://github.com/git-for-windows/git/wiki/FAQ#some-native-console-programs-dont-work-when-run-from-git-bash-how-to-fix-it
 - Only Far manager >= 3.0 supported by XTermJS, all old versioans are unsupported
 - ConPty requires to run your application from existing terminal session, in another case it just not work. For example in Qt Creator on Windows check "Run in Terminal" in project run settings before run examples or tests
-
-### QVTerminal
-This is very-very-very basic implementation of VT100 terminal + Pty-Qt.
-It's just forked repository from https://github.com/sebcaux/QVTerminal and used for this example with connection to real PTY.
-So, you can see basic sample howto make VT100-like terminal from scratch.
-Just build project and run executable of this example.
 
 Also, you can find for example projects like https://github.com/lxqt/qterminal, they all based on QTermWidget and they all not-crossplatform and support only UNIX. But QTermWidget is support full VT100 protocol because it's fork from Linux/KDE/Konsole application.
 
