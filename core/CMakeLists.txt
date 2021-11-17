@@ -1,4 +1,4 @@
-project(ptyqt-core VERSION 0.1 LANGUAGES CXX)
+project(ptyqt-core)
 
 set(SOURCE_FILES
     ptyqt.h

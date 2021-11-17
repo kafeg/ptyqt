@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2.0)
 
-project(ptyqt VERSION 0.6.2 LANGUAGES CXX)
+project(ptyqt VERSION 0.6.3 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
