@@ -17,6 +17,10 @@ else()
     set(PTYQT_DEBUG FALSE)
 endif()
 
+if("${BUILD_TYPE}" STREQUAL "SHARED")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+endif()
+
 message("Build type: ${BUILD_TYPE}")
 
 if (MSVC)
