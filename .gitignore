@@ -300,3 +300,4 @@ CTestTestfile.cmake
 /include/iptyprocess.h
 /include/ptyqt.h
 /lib/ptyqt.lib
+build_android/

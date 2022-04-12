@@ -1,0 +1,3 @@
+[submodule "qt-android-cmake"]
+	path = qt-android-cmake
+	url = https://github.com/ptyio/qt-android-cmake.git

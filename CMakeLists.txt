@@ -19,10 +19,25 @@ endif()
 
 if("${BUILD_TYPE}" STREQUAL "SHARED")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    message("Build type: ${BUILD_TYPE}")
 endif()
 
-message("Build type: ${BUILD_TYPE}")
+# Android
+if (ANDROID)
+  message(STATUS "Android build detected")
+  if ("$ENV{QT_ANDROID_PATH}" STREQUAL "")
+    message(FATAL_ERROR "QT_ANDROID_PATH not defined")
+  endif()
 
+  include(qt-android-cmake/AddQtAndroidApk.cmake)
+
+  set(QT_ANDROID_SOURCE_DIR ${QT_ANDROID_SOURCE_DIR} CACHE STRING "Source directory of AddQtAndroidApk.cmake")
+  set(QT_ANDROID_QT_ROOT ${QT_ANDROID_QT_ROOT} CACHE STRING "Qt SDK root folder")
+  set(QT_ANDROID_SDK_ROOT ${QT_ANDROID_SDK_ROOT} CACHE STRING "" FORCE)
+  set(QT_ANDROID_NDK_ROOT ${QT_ANDROID_NDK_ROOT} CACHE STRING "" FORCE)
+endif()
+
+# Windows
 if (MSVC)
     #target arch for find winpty libs
     if ("${TARGET_ARCH}" STREQUAL "x86_amd64" OR "${TARGET_ARCH}" STREQUAL "")

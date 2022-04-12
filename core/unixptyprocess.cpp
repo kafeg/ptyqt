@@ -3,7 +3,9 @@
 
 #include <termios.h>
 #include <errno.h>
+#ifndef __ANDROID__
 #include <utmpx.h>
+#endif
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -331,6 +333,8 @@ void ShellProcess::setupChildProcess()
     ioctl(m_handleSlave, TIOCSCTTY, 0);
     tcsetpgrp(m_handleSlave, sid);
 
+#ifndef __ANDROID__
+    // on Android imposible to put record to the 'utmp' file
     struct utmpx utmpxInfo;
     memset(&utmpxInfo, 0, sizeof(utmpxInfo));
 
@@ -361,5 +365,7 @@ void ShellProcess::setupChildProcess()
 
 #if !defined(Q_OS_UNIX)
     updwtmpx(_PATH_UTMPX, &loginInfo);
+#endif
+
 #endif
 }
